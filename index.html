@@ -10,11 +10,25 @@
 <meta property="og:url" content="https://qatarbiz.com" />
 <meta property="og:type" content="website" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23B8500F'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='30' font-weight='700' fill='%23FFFFFF' text-anchor='middle'%3EQB%3C/text%3E%3C/svg%3E" />
+<script>
+(function(){
+  function show(msg){
+    var r=document.getElementById('root');
+    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#B8500F">QatarBiz — diagnostic (v3)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#FFF1E4;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#B8500F;color:#fff;font-weight:600">Reload</button></div>';
+  }
+  window.addEventListener('error', function(e){ show((e.message||String(e.error))+'\n'+(e.filename||'')+' : line '+(e.lineno||'?')); });
+  window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason && e.reason.message || e.reason)); });
+  setTimeout(function(){
+    var m=document.getElementById('bootmsg');
+    if(m) m.textContent='Still loading… if this stays for 10+ seconds, screenshot this page. (v3)';
+  }, 6000);
+})();
+</script>
 <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#B8500F"><h2 style="margin-bottom:8px">QatarBiz</h2><p id="bootmsg">Loading… (build v3)</p></div></div>
 <script>
 const { useState, useEffect, useRef } = React;
 /* ============ INLINE ICON SET (lucide-style, dependency-free) ============ */
