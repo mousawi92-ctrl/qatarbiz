@@ -152,6 +152,8 @@ function publicView(l) {
   const o = {};
   for (const k of PUBLIC_FIELDS) if (l[k] !== undefined) o[k] = l[k];
   o.badges ||= []; o.activities ||= []; o.extraLicenses ||= [];
+  o.photos = (l.files || []).filter((f) => /^Business photo/i.test(f.label))
+    .map((f) => "/api/photos/" + l.id + "/" + encodeURIComponent(f.stored));
   return o;
 }
 function nextRef(type) {
@@ -297,6 +299,21 @@ async function handle(req, res) {
         activities: Array.isArray(fields.activities) ? fields.activities.map((a) => clean(a, 120)).slice(0, 15) : [],
       } });
     } catch (e) { console.error("extract failed:", e.message); return json(res, 200, { manual: true }); }
+  }
+
+
+  const mPhoto = p.match(/^\/api\/photos\/([A-Za-z0-9-]+)\/(.+)$/);
+  if (mPhoto && req.method === "GET") {
+    const l = db.listings.find((x) => x.id === mPhoto[1]);
+    if (!l || l.status !== "Published") return bad(res, 404, "Not found");
+    const stored = decodeURIComponent(mPhoto[2]).replace(/[^A-Za-z0-9._-]/g, "_");
+    const isPhoto = (l.files || []).some((f) => f.stored === stored && /^Business photo/i.test(f.label));
+    if (!isPhoto) return bad(res, 404, "Not found");
+    const fp = path.normalize(path.join(FILES_DIR, l.id, stored));
+    if (!fp.startsWith(FILES_DIR) || !fs.existsSync(fp)) return bad(res, 404, "Not found");
+    const ext = path.extname(fp).toLowerCase();
+    res.writeHead(200, { "Content-Type": MIME[ext] || "image/jpeg", "Cache-Control": "public, max-age=86400" });
+    return fs.createReadStream(fp).pipe(res);
   }
 
   /* ---------- seller submission (multipart) ---------- */
@@ -462,6 +479,15 @@ async function handle(req, res) {
 
 /* ---------------- boot ---------------- */
 loadDB();
+{
+  const envPw = process.env.ADMIN_PASSWORD;
+  const adminU = db.users.find((u) => u.role === "admin");
+  if (adminU && envPw && !checkPassword(envPw, adminU.pass)) {
+    adminU.pass = hashPassword(envPw);
+    saveDBNow();
+    console.log("Admin password synced from ADMIN_PASSWORD environment variable.");
+  }
+}
 if (!db.users.some((u) => u.role === "admin")) {
   const pw = process.env.ADMIN_PASSWORD || "QatarBiz-" + crypto.randomBytes(4).toString("hex");
   db.users.push({ id: crypto.randomUUID(), email: "admin@qatarbiz.com", pass: hashPassword(pw),
