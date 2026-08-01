@@ -14,22 +14,19 @@
 (function(){
   function show(msg){
     var r=document.getElementById('root');
-    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#B8500F">QatarBiz — diagnostic (v3)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#FFF1E4;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#B8500F;color:#fff;font-weight:600">Reload</button></div>';
+    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#B8500F">QatarBiz — diagnostic (v4)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#FFF1E4;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#B8500F;color:#fff;font-weight:600">Reload</button></div>';
   }
   window.addEventListener('error', function(e){ show((e.message||String(e.error))+'\n'+(e.filename||'')+' : line '+(e.lineno||'?')); });
   window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason && e.reason.message || e.reason)); });
-  setTimeout(function(){
-    var m=document.getElementById('bootmsg');
-    if(m) m.textContent='Still loading… if this stays for 10+ seconds, screenshot this page. (v3)';
-  }, 6000);
 })();
 </script>
 <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#B8500F"><h2 style="margin-bottom:8px">QatarBiz</h2><p id="bootmsg">Loading… (build v3)</p></div></div>
+<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#B8500F"><h2 style="margin-bottom:8px">QatarBiz</h2><p>Loading… (build v4)</p></div></div>
 <script>
+"use strict";
 const { useState, useEffect, useRef } = React;
 /* ============ INLINE ICON SET (lucide-style, dependency-free) ============ */
 const mkIcon = (svg) => ({ size = 24, color = "currentColor", strokeWidth = 2, style, className }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: style, className: className, dangerouslySetInnerHTML: { __html: svg } }));
@@ -2317,7 +2314,7 @@ function Legal({ params }) {
             React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 20 } }, tr("Prototype content for demonstration. Final legal text to be prepared with Qatari counsel.")))));
 }
 /* ================= APP ROUTER ================= */
-export default class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
     constructor(p) { super(p); this.state = { err: false }; }
     static getDerivedStateFromError() { return { err: true }; }
     render() {
