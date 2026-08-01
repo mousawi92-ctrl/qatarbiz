@@ -318,6 +318,7 @@ async function handle(req, res) {
 
   /* ---------- seller submission (multipart) ---------- */
   if (p === "/api/listings" && req.method === "POST") {
+    if (!user) return bad(res, 401, "Please sign in to submit a listing.");
     if (!rateLimit(req, "submit", 20, 3600000)) return bad(res, 429, "Too many submissions. Try later.");
     const buf = await readBody(req);
     const mp = parseMultipart(buf, req.headers["content-type"]);
@@ -355,6 +356,7 @@ async function handle(req, res) {
       activities: Array.isArray(ex.activities) ? ex.activities.map((a) => clean(a, 120)).slice(0, 15) : [],
       price: priceEntry ? (Number(String(priceEntry[1]).replace(/[^0-9.]/g, "")) || 0) : 0,
       negotiable: structured && structured.neg === "Yes",
+      category: clean((structured && structured.category) || "", 120),
       badges: ["Broker Managed"], extraLicenses: [],
     };
     if (ex.businessName) listing.private["Legal business name (extracted)"] = clean(ex.businessName, 200);
@@ -386,9 +388,26 @@ async function handle(req, res) {
     if (!user) return bad(res, 401, "Not signed in");
     const items = db.listings
       .filter((l) => l.sellerId === user.id || (l.sellerEmail && l.sellerEmail.toLowerCase() === user.email))
-      .map((l) => ({ id: l.id, type: l.type, title: l.title || "", status: l.status, createdAt: l.createdAt }));
+      .map((l) => ({ id: l.id, type: l.type, title: l.title || "", status: l.status, createdAt: l.createdAt, hasEdit: !!l.editRequest, price: l.price || 0 }));
     return json(res, 200, { listings: items });
   }
+
+  const mMyEdit = p.match(/^\/api\/my\/listings\/([A-Za-z0-9-]+)$/);
+  if (mMyEdit && req.method === "PATCH") {
+    if (!user) return bad(res, 401, "Not signed in");
+    const l = db.listings.find((x) => x.id === mMyEdit[1]);
+    if (!l || !(l.sellerId === user.id || (l.sellerEmail && l.sellerEmail.toLowerCase() === user.email))) return bad(res, 404, "Listing not found");
+    const b = parseJSONBody(await readBody(req));
+    if (!b) return bad(res, 400, "Invalid request");
+    const er = { at: new Date().toISOString() };
+    if (b.price !== undefined && String(b.price).trim() !== "") er["New asking price (QAR)"] = clean(b.price, 40);
+    if (b.negotiable !== undefined) er["Negotiable"] = b.negotiable ? "Yes" : "No";
+    if (b.note) er["Message to the broker"] = clean(b.note, 1500);
+    l.editRequest = er;
+    saveDBNow();
+    return json(res, 200, { ok: true });
+  }
+
   if (p === "/api/my/inquiries" && req.method === "GET") {
     if (!user) return bad(res, 401, "Not signed in");
     const items = db.inquiries
@@ -422,6 +441,7 @@ async function handle(req, res) {
       const EDITABLE = ["title", "category", "location", "established", "price", "negotiable", "expiry", "legalForm",
         "permit", "estCard", "staff", "rentMonthly", "leaseExpiry", "revenueRange", "badges", "activities",
         "extraLicenses", "desc", "brokerNote", "immediate", "status"];
+      if (b.clearEdit) delete l.editRequest;
       for (const k of EDITABLE) if (b[k] !== undefined) {
         if (["badges", "activities", "extraLicenses"].includes(k)) l[k] = Array.isArray(b[k]) ? b[k].map((x) => clean(x, 120)).slice(0, 20) : [];
         else if (k === "price") l[k] = Number(b[k]) || 0;

@@ -9,12 +9,12 @@
 <meta property="og:description" content="Broker-managed sales of commercial registrations and operating businesses in Qatar." />
 <meta property="og:url" content="https://qatarbiz.com" />
 <meta property="og:type" content="website" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23B8500F'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='30' font-weight='700' fill='%23FFFFFF' text-anchor='middle'%3EQB%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%238A1538'/%3E%3Cpath d='M24 9.5c-7.6 0-13.5 5.9-13.5 13.5S16.4 36.5 24 36.5c2.8 0 5.4-.8 7.6-2.3l3.6 3.6a2 2 0 0 0 2.8-2.8l-3.5-3.5a13.4 13.4 0 0 0 3-8.5C37.5 15.4 31.6 9.5 24 9.5zm0 5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z' fill='%23FFFFFF'/%3E%3C/svg%3E" />
 <script>
 (function(){
   function show(msg){
     var r=document.getElementById('root');
-    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#B8500F">QatarBiz — diagnostic (v4)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#FFF1E4;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#B8500F;color:#fff;font-weight:600">Reload</button></div>';
+    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#8A1538">QatarBiz — diagnostic (v5)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#F5EAD3;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#8A1538;color:#fff;font-weight:600">Reload</button></div>';
   }
   window.addEventListener('error', function(e){ show((e.message||String(e.error))+'\n'+(e.filename||'')+' : line '+(e.lineno||'?')); });
   window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason && e.reason.message || e.reason)); });
@@ -24,7 +24,7 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#B8500F"><h2 style="margin-bottom:8px">QatarBiz</h2><p>Loading… (build v4)</p></div></div>
+<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#8A1538"><h2 style="margin-bottom:8px">QatarBiz</h2><p>Loading… (build v5)</p></div></div>
 <script>
 "use strict";
 const { useState, useEffect, useRef } = React;
@@ -596,6 +596,18 @@ const AR = {
 const tr = (s) => (LANG === "ar" ? (AR[s] !== undefined ? AR[s] : s) : s);
 const fmtQAR = (n) => (n === 0 || n ? "QAR " + Number(n).toLocaleString() : "\u2014");
 const AGE = (y) => { const n = new Date().getFullYear() - Number(y); return isNaN(n) || n < 0 ? "\u2014" : n; };
+function Logo({ light }) {
+    const maroon = "#8A1538";
+    return (React.createElement("span", { style: { display: "inline-flex", alignItems: "center", gap: 10 } },
+        React.createElement("svg", { width: "36", height: "36", viewBox: "0 0 48 48", "aria-hidden": "true" },
+            React.createElement("rect", { width: "48", height: "48", rx: "13", fill: light ? "#FFFFFF" : maroon }),
+            React.createElement("path", { d: "M24 9.5c-7.6 0-13.5 5.9-13.5 13.5S16.4 36.5 24 36.5c2.8 0 5.4-.8 7.6-2.3l3.6 3.6a2 2 0 0 0 2.8-2.8l-3.5-3.5a13.4 13.4 0 0 0 3-8.5C37.5 15.4 31.6 9.5 24 9.5zm0 5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z", fill: light ? maroon : "#FFFFFF" }),
+            React.createElement("rect", { x: "21", y: "21", width: "6", height: "3.2", rx: "1", fill: light ? maroon : "#FFFFFF" }),
+            React.createElement("rect", { x: "21", y: "25.5", width: "6", height: "3.2", rx: "1", fill: light ? maroon : "#FFFFFF", opacity: ".65" })),
+        React.createElement("span", { style: { display: "inline-flex", flexDirection: "column", lineHeight: 1 } },
+            React.createElement("span", { className: "logow", style: { color: light ? "#fff" : "var(--navy)" } }, "QatarBiz"),
+            React.createElement("span", { style: { fontSize: 10.5, letterSpacing: ".22em", fontWeight: 600, color: light ? "rgba(255,255,255,.75)" : "var(--gold)", textTransform: "uppercase", marginTop: 3 } }, "Business Marketplace"))));
+}
 /* ============ API CLIENT ============ */
 const api = {
     async req(method, url, body, isForm) {
@@ -625,6 +637,35 @@ function usePublished() {
     return items;
 }
 let WIZ_FILES = {};
+const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefined ? a[tr(en)] : a[en]; return String(v || "").trim().length > 0; };
+const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
+Object.assign(AR, {
+    "View": "عرض", "years": "سنة",
+    "Restaurants and Cafes": "مطاعم ومقاهي", "Coffee Shops": "كوفي شوب", "Cafeterias": "كافتيريات",
+    "Salons and Barbershops": "صالونات وحلاقة", "Beauty and Spa": "تجميل وسبا", "Cleaning Services": "خدمات تنظيف",
+    "Trading": "تجارة", "Contracting and Construction": "مقاولات وإنشاءات", "Transport and Delivery": "نقل وتوصيل",
+    "Car Services and Garages": "خدمات سيارات وكراجات", "Real Estate": "عقارات", "Retail Shops": "محلات تجزئة",
+    "Supermarkets and Groceries": "سوبرماركت وبقالة", "Gyms and Sports": "أندية رياضية", "Medical and Health": "طبي وصحة",
+    "Education and Training": "تعليم وتدريب", "IT and Technology": "تقنية معلومات", "Events and Entertainment": "فعاليات وترفيه",
+    "Manufacturing": "تصنيع", "Laundry": "مغاسل", "Other": "أخرى",
+    "Business category": "فئة النشاط", "Select a category": "اختر الفئة", "All categories": "كل الفئات",
+    "What are you selling?": "ماذا تبيع؟",
+    "Choose the type of listing you want to create. The process takes less than 5 minutes.": "اختر نوع الإعلان الذي تريد إنشاءه. تستغرق العملية أقل من 5 دقائق.",
+    "A registered company for sale without operations.": "سجل تجاري للبيع بدون عمليات تشغيلية.",
+    "An operating business for sale with staff and revenue.": "نشاط تجاري قائم للبيع مع موظفين وإيرادات.",
+    "Create your account first": "أنشئ حسابك أولاً",
+    "To list with us you need a seller account. It takes under a minute, and lets you track and manage all your listings in one place.": "للإعلان لدينا تحتاج حساب بائع. يستغرق أقل من دقيقة، ويتيح لك متابعة وإدارة جميع إعلاناتك في مكان واحد.",
+    "Sign in or create account": "تسجيل الدخول أو إنشاء حساب",
+    "This field is required": "هذا الحقل مطلوب",
+    "Please complete all fields to continue.": "يرجى إكمال جميع الحقول للمتابعة.",
+    "Request changes": "طلب تعديل",
+    "Changes pending broker approval": "التعديلات بانتظار موافقة الوسيط",
+    "New asking price (QAR)": "السعر المطلوب الجديد (ر.ق)",
+    "Message to the broker": "رسالة إلى الوسيط",
+    "Send request": "إرسال الطلب",
+    "Request sent. Our broker will review and apply the changes.": "تم إرسال الطلب. سيراجعه الوسيط ويطبّق التعديلات.",
+    "Please agree to all confirmations to submit.": "يرجى الموافقة على جميع الإقرارات للإرسال.",
+});
 Object.assign(AR, {
     "Business Photos": "صور النشاط التجاري",
     "Upload at least 5 photos of the business (shop front, interior, equipment, products). These photos appear on your listing.": "ارفع 5 صور على الأقل للنشاط (الواجهة، الداخل، المعدات، المنتجات). تظهر هذه الصور في إعلانك.",
@@ -658,19 +699,19 @@ Object.assign(AR, {
     "Click to upload": "اضغط للرفع", "PDF, JPG, or PNG": "PDF أو JPG أو PNG",
 });
 /* ================= DESIGN TOKENS =================
-   Navy ink:    #B8500F   Deep ink: #9A4109
-   Paper:       #FFFFFF   Section:  #FFF6EE
-   Brass gold:  #F97316   Teal:     #EA7A28
-   Border:      #F7E3D2   Muted:    #8A6A55
+   Navy ink:    #8A1538   Deep ink: #6E102C
+   Paper:       #FFFFFF   Section:  #F7F4EE
+   Brass gold:  #C6A664   Teal:     #1F7A5C
+   Border:      #E9E2D6   Muted:    #6B6257
    Display: Fraunces / Body: Public Sans / Data: IBM Plex Mono
 ==================================================== */
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Tajawal:wght@400;500;700;800&display=swap');
 
 :root{
-  --ink:#B8500F; --deep:#9A4109; --paper:#FFFFFF; --section:#FFF6EE;
-  --gold:#F97316; --gold-soft:#FFEDD5; --teal:#EA7A28; --teal-soft:#FFF1E4;
-  --border:#F7E3D2; --muted:#8A6A55; --danger:#B4443C;
+  --ink:#8A1538; --deep:#6E102C; --paper:#FFFFFF; --section:#F7F4EE;
+  --gold:#C6A664; --gold-soft:#F5EAD3; --teal:#1F7A5C; --teal-soft:#E7F2ED;
+  --border:#E9E2D6; --muted:#6B6257; --danger:#B4443C;
   --disp:'Fraunces', Georgia, serif;
   --body:'Public Sans', -apple-system, sans-serif;
   --mono:'IBM Plex Mono', ui-monospace, monospace;
@@ -713,17 +754,18 @@ a{color:inherit; text-decoration:none;}
 .card{background:#fff; border:1px solid var(--border); border-radius:16px;}
 .badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:999px; white-space:nowrap;}
 .badge.teal{background:var(--teal-soft); color:var(--teal);}
-.badge.gold{background:var(--gold-soft); color:#C2570D;}
+.badge.gold{background:var(--gold-soft); color:#8F7333;}
 .badge.navy{background:#E8EDF5; color:var(--ink);}
-.badge.grey{background:#FBEBDD; color:var(--muted);}
+.badge.grey{background:#F3EEE4; color:var(--muted);}
 
 /* Signature: the identity veil */
-.veil{position:relative; overflow:hidden; border-radius:8px; background:repeating-linear-gradient(-45deg,#C75E1B,#C75E1B 6px,#B8500F 6px,#B8500F 12px); color:#B9C6D9; display:flex; align-items:center; gap:8px; padding:9px 13px; font-size:12.5px; font-weight:600; letter-spacing:.03em;}
+.veil{position:relative; overflow:hidden; border-radius:8px; background:repeating-linear-gradient(-45deg,#A31B45,#A31B45 6px,#8A1538 6px,#8A1538 12px); color:#B9C6D9; display:flex; align-items:center; gap:8px; padding:9px 13px; font-size:12.5px; font-weight:600; letter-spacing:.03em;}
 .veil .lockicon{color:var(--gold);}
 
 /* Header */
 .hdr{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.94); backdrop-filter:blur(10px); border-bottom:1px solid var(--border);}
 .hdr-in{display:flex; align-items:center; justify-content:space-between; height:68px;}
+.logow{font-family:var(--serif),Georgia,serif;font-weight:700;font-size:21px;letter-spacing:.01em}
 .logo{display:flex; align-items:baseline; gap:2px; font-family:var(--disp); font-size:23px; font-weight:600; letter-spacing:-.01em;}
 .logo .qa{color:var(--gold); font-size:15px; font-family:var(--mono); font-weight:500;}
 .nav-links{display:flex; align-items:center; gap:26px; font-size:14.5px; font-weight:500;}
@@ -740,7 +782,7 @@ a{color:inherit; text-decoration:none;}
 }
 
 /* Hero */
-.hero{padding:84px 0 76px; background:linear-gradient(180deg,#FFFFFF 0%, #FFF8F1 100%);}
+.hero{padding:84px 0 76px; background:linear-gradient(180deg,#FFFFFF 0%, #FAF8F4 100%);}
 .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:center;}
 @media(max-width:880px){.hero-grid{grid-template-columns:1fr;} .hero-art{max-width:420px; margin:0 auto;}}
 
@@ -753,7 +795,7 @@ a{color:inherit; text-decoration:none;}
 
 /* Listing cards */
 .lcard{background:#fff; border:1px solid var(--border); border-radius:16px; padding:22px; display:flex; flex-direction:column; gap:14px; transition:border-color .15s, box-shadow .15s;}
-.lcard:hover{border-color:#C7D2E0; box-shadow:0 8px 28px rgba(184,80,15,.07);}
+.lcard:hover{border-color:#C7D2E0; box-shadow:0 8px 28px rgba(138,21,56,.07);}
 .ref{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.02em;}
 .price{font-family:var(--disp); font-size:24px; font-weight:600;}
 .kv{display:flex; justify-content:space-between; gap:10px; font-size:13.5px; padding:7px 0; border-bottom:1px dashed var(--border);}
@@ -785,20 +827,20 @@ textarea.input{min-height:96px; resize:vertical;}
 .stepcount{font-family:var(--mono); font-size:12.5px; color:var(--muted);}
 
 /* Upload */
-.drop{border:2px dashed #C9D3E0; border-radius:14px; padding:34px 20px; text-align:center; background:#FFFBF7; cursor:pointer;}
+.drop{border:2px dashed #C9D3E0; border-radius:14px; padding:34px 20px; text-align:center; background:#FBFAF7; cursor:pointer;}
 .drop:hover{border-color:var(--gold);}
 
 /* Tables (admin) */
 .tbl{width:100%; border-collapse:collapse; font-size:13.5px;}
 .tbl th{font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); font-weight:700;}
 .tbl td{padding:12px; border-bottom:1px solid var(--section); vertical-align:middle;}
-.tbl tr:hover td{background:#FFFBF7;}
+.tbl tr:hover td{background:#FBFAF7;}
 .tblwrap{overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:#fff;}
 
 /* Dashboard shell */
 .dash{display:grid; grid-template-columns:230px 1fr; gap:0; min-height:70vh;}
-.dashnav{background:var(--deep); color:#F4D6BC; padding:26px 0; border-radius:16px 0 0 16px;}
-.dashnav button{display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:none; border:none; color:#F4D6BC; padding:12px 22px; font-size:14px; font-weight:500;}
+.dashnav{background:var(--deep); color:#E4D9C8; padding:26px 0; border-radius:16px 0 0 16px;}
+.dashnav button{display:flex; align-items:center; gap:11px; width:100%; text-align:left; background:none; border:none; color:#E4D9C8; padding:12px 22px; font-size:14px; font-weight:500;}
 .dashnav button:hover{color:#fff;}
 .dashnav button.active{color:#fff; background:rgba(255,255,255,.07); border-right:3px solid var(--gold);}
 .dashbody{background:#fff; border:1px solid var(--border); border-left:none; border-radius:0 16px 16px 0; padding:30px;}
@@ -808,14 +850,14 @@ textarea.input{min-height:96px; resize:vertical;}
 .stat .l{font-size:12.5px; color:var(--muted); font-weight:600; margin-top:2px;}
 
 /* Modal */
-.modal-bg{position:fixed; inset:0; background:rgba(154,65,9,.55); z-index:80; display:flex; align-items:flex-start; justify-content:center; padding:30px 16px; overflow-y:auto;}
+.modal-bg{position:fixed; inset:0; background:rgba(110,16,44,.55); z-index:80; display:flex; align-items:flex-start; justify-content:center; padding:30px 16px; overflow-y:auto;}
 .modal{background:#fff; border-radius:18px; max-width:640px; width:100%; padding:30px; position:relative;}
 .modal .close{position:absolute; top:16px; right:16px; background:none; border:none; color:var(--muted);}
 
 /* Footer */
-.foot{background:var(--deep); color:#F3C9A6; padding:56px 0 30px; font-size:14px;}
+.foot{background:var(--deep); color:#D9CBB6; padding:56px 0 30px; font-size:14px;}
 .foot h4{color:#fff; font-size:13px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px;}
-.foot button{display:block; background:none; border:none; color:#F3C9A6; padding:5px 0; font-size:14px; text-align:left;}
+.foot button{display:block; background:none; border:none; color:#D9CBB6; padding:5px 0; font-size:14px; text-align:left;}
 .foot button:hover{color:#fff;}
 .notice{border-left:3px solid var(--gold); background:var(--gold-soft); border-radius:0 10px 10px 0; padding:14px 16px; font-size:13.5px; line-height:1.55;}
 .tabs{display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:26px;}
@@ -857,28 +899,35 @@ function PrivateTag() {
         " Kept private");
 }
 function ListingCard({ l, go }) {
-    return (React.createElement("div", { className: "lcard" },
-        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 } },
-            React.createElement("span", { className: "badge grey" }, l.type === "cr" ? tr("Commercial Registration") : tr("Running Business")),
+    const isCR = l.type === "cr";
+    const photo = (l.photos || [])[0];
+    return (React.createElement("div", { className: "lcard", onClick: () => go("listing", { id: l.id }), style: { cursor: "pointer" } },
+        isCR ? (React.createElement("div", { style: { borderRadius: 14, overflow: "hidden", border: "1px solid var(--border)", marginBottom: 14 } },
+            React.createElement("svg", { viewBox: "0 0 400 150", style: { width: "100%", display: "block" } },
+                React.createElement("rect", { width: "400", height: "150", fill: "#FBFAF7" }),
+                React.createElement("rect", { width: "400", height: "40", fill: "#8A1538" }),
+                React.createElement("text", { x: "16", y: "26", fill: "#fff", fontSize: "15", fontWeight: "700", fontFamily: "Georgia, serif" }, "Commercial Registration"),
+                React.createElement("text", { x: "384", y: "26", fill: "#F5EAD3", fontSize: "12", fontWeight: "600", textAnchor: "end", fontFamily: "monospace" }, l.id),
+                React.createElement("text", { x: "16", y: "68", fill: "#6B6257", fontSize: "11", fontWeight: "600", letterSpacing: "1" }, "ESTABLISHED"),
+                React.createElement("text", { x: "16", y: "90", fill: "#8A1538", fontSize: "19", fontWeight: "700", fontFamily: "Georgia, serif" }, l.established || "—"),
+                React.createElement("text", { x: "200", y: "68", fill: "#6B6257", fontSize: "11", fontWeight: "600", letterSpacing: "1" }, "EXPIRY"),
+                React.createElement("text", { x: "200", y: "90", fill: "#8A1538", fontSize: "19", fontWeight: "700", fontFamily: "Georgia, serif" }, l.expiry ? String(l.expiry).slice(0, 12) : "—"),
+                React.createElement("text", { x: "16", y: "122", fill: "#6B6257", fontSize: "11", fontWeight: "600", letterSpacing: "1" }, "ACTIVITIES"),
+                React.createElement("text", { x: "16", y: "140", fill: "#3d3630", fontSize: "12.5" }, (l.activities || []).slice(0, 2).join(" · ").slice(0, 52) || "—")))) : photo ? (React.createElement("div", { style: { borderRadius: 14, overflow: "hidden", marginBottom: 14, height: 160, background: "var(--section)" } },
+            React.createElement("img", { src: photo, alt: "", loading: "lazy", style: { width: "100%", height: "100%", objectFit: "cover", display: "block" } }))) : (React.createElement("div", { style: { borderRadius: 14, marginBottom: 14, height: 110, background: "linear-gradient(135deg, #8A1538, #6E102C)", display: "flex", alignItems: "center", justifyContent: "center" } },
+            React.createElement(Store, { size: 40, color: "#fff" }))),
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 8 } },
+            React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr(l.category || "Running Business")),
             React.createElement("span", { className: "ref" }, l.id)),
-        React.createElement("h3", { className: "h3", style: { fontSize: 18 } }, tr(l.title)),
-        React.createElement(Veil, null),
-        React.createElement("div", null,
-            React.createElement(KV, { k: tr("Established"), v: l.established ? `${l.established} · ${AGE(l.established)} years` : "—" }),
-            l.type === "cr" ? (React.createElement(React.Fragment, null,
-                React.createElement(KV, { k: tr("CR expiry"), v: l.expiry }),
-                React.createElement(KV, { k: tr("Commercial permit"), v: l.permit }),
-                React.createElement(KV, { k: tr("Establishment card"), v: l.estCard }))) : (React.createElement(React.Fragment, null,
-                React.createElement(KV, { k: tr("Location"), v: tr(l.location) }),
-                React.createElement(KV, { k: tr("Staff"), v: `${l.staff} employees` }),
-                React.createElement(KV, { k: tr("Monthly rent"), v: fmtQAR(l.rent) })))),
-        React.createElement(Badges, { list: l.badges }),
+        React.createElement("h3", { className: "h3", style: { fontSize: 17.5, marginBottom: 6 } }, tr(l.title)),
+        React.createElement("div", { className: "muted", style: { fontSize: 13.5, marginBottom: 12 } }, l.established ? `${tr("Established")} ${l.established} · ${AGE(l.established)} ${tr("years")}` : ""),
         React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 6 } },
             React.createElement("div", null,
                 React.createElement("div", { style: { fontSize: 11.5, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".07em" } }, tr("Asking price")),
                 React.createElement("div", { className: "price" }, fmtQAR(l.price))),
-            React.createElement("button", { className: "btn primary sm", onClick: () => go("listing", { id: l.id }) },
-                "View Opportunity ",
+            React.createElement("button", { className: "btn primary sm", onClick: (e) => { e.stopPropagation(); go("listing", { id: l.id }); } },
+                tr("View"),
+                " ",
                 React.createElement(ArrowRight, { size: 15 })))));
 }
 /* ================= HEADER / FOOTER ================= */
@@ -891,20 +940,19 @@ function Header({ go, page, user, setUser, lang, setLang }) {
     ];
     return (React.createElement("header", { className: "hdr" },
         React.createElement("div", { className: "wrap hdr-in" },
-            React.createElement("a", { href: "#", onClick: (e) => { e.preventDefault(); nav("home"); }, className: "logo" },
-                "QatarBiz",
-                React.createElement("span", { className: "qa" }, ".com")),
+            React.createElement("a", { href: "#", onClick: (e) => { e.preventDefault(); nav("home"); }, className: "logo", style: { textDecoration: "none" } },
+                React.createElement(Logo, null)),
             React.createElement("nav", { className: "nav-links" },
                 links.map(([p, t]) => (React.createElement("button", { key: p, className: page === p ? "active" : "", onClick: () => nav(p) }, tr(t)))),
                 React.createElement("button", { onClick: () => nav("login") }, user ? (user.role === "admin" ? tr("Admin") : tr("Dashboard")) : tr("Login")),
                 React.createElement("button", { className: "langbtn", onClick: () => setLang(lang === "en" ? "ar" : "en") }, lang === "en" ? "عربي" : "English"),
-                React.createElement("button", { className: "btn gold sm", style: { marginLeft: 4 }, onClick: () => nav("sell-cr") }, tr("Post a Listing"))),
+                React.createElement("button", { className: "btn gold sm", style: { marginLeft: 4 }, onClick: () => nav("sell") }, tr("Post a Listing"))),
             React.createElement("button", { className: "langbtn", onClick: () => setLang(lang === "en" ? "ar" : "en") }, lang === "en" ? "عربي" : "English"),
             React.createElement("button", { className: "burger", "aria-label": "Menu", onClick: () => setOpen(!open) }, open ? React.createElement(X, null) : React.createElement(Menu, null))),
         React.createElement("div", { className: "mobile-nav" + (open ? " open" : "") },
             links.map(([p, t]) => React.createElement("button", { key: p, onClick: () => nav(p) }, tr(t))),
             React.createElement("button", { onClick: () => nav("login") }, user ? tr("Dashboard") : tr("Login")),
-            React.createElement("button", { style: { color: "var(--gold)", fontWeight: 700 }, onClick: () => nav("sell-cr") }, tr("Post a Listing")))));
+            React.createElement("button", { style: { color: "var(--gold)", fontWeight: 700 }, onClick: () => nav("sell") }, tr("Post a Listing")))));
 }
 function Footer({ go }) {
     return (React.createElement("footer", { className: "foot" },
@@ -912,8 +960,7 @@ function Footer({ go }) {
             React.createElement("div", { className: "grid4", style: { gap: 36 } },
                 React.createElement("div", null,
                     React.createElement("div", { className: "logo", style: { color: "#fff", marginBottom: 12 } },
-                        "QatarBiz",
-                        React.createElement("span", { className: "qa" }, ".com")),
+                        React.createElement(Logo, null)),
                     React.createElement("p", { style: { lineHeight: 1.6, maxWidth: "30ch" } }, tr("Qatar's trusted business marketplace. Broker-managed sales of commercial registrations and operating businesses."))),
                 React.createElement("div", null,
                     React.createElement("h4", null, tr("Marketplace")),
@@ -947,33 +994,33 @@ function HeroArt() {
     return (React.createElement("svg", { viewBox: "0 0 420 360", className: "hero-art", style: { width: "100%", height: "auto" }, role: "img", "aria-label": "Abstract illustration of a private business document" },
         React.createElement("defs", null,
             React.createElement("pattern", { id: "hatch", width: "10", height: "10", patternTransform: "rotate(-45)", patternUnits: "userSpaceOnUse" },
-                React.createElement("rect", { width: "10", height: "10", fill: "#C75E1B" }),
-                React.createElement("rect", { width: "5", height: "10", fill: "#B8500F" }))),
-        React.createElement("rect", { x: "46", y: "34", width: "270", height: "310", rx: "16", fill: "#9A4109", opacity: ".08" }),
-        React.createElement("rect", { x: "60", y: "20", width: "270", height: "310", rx: "16", fill: "#fff", stroke: "#F7E3D2", strokeWidth: "2" }),
+                React.createElement("rect", { width: "10", height: "10", fill: "#A31B45" }),
+                React.createElement("rect", { width: "5", height: "10", fill: "#8A1538" }))),
+        React.createElement("rect", { x: "46", y: "34", width: "270", height: "310", rx: "16", fill: "#6E102C", opacity: ".08" }),
+        React.createElement("rect", { x: "60", y: "20", width: "270", height: "310", rx: "16", fill: "#fff", stroke: "#E9E2D6", strokeWidth: "2" }),
         React.createElement("rect", { x: "84", y: "52", width: "120", height: "14", rx: "7", fill: "url(#hatch)" }),
-        React.createElement("rect", { x: "84", y: "78", width: "180", height: "8", rx: "4", fill: "#F7E3D2" }),
-        React.createElement("rect", { x: "84", y: "94", width: "150", height: "8", rx: "4", fill: "#F7E3D2" }),
+        React.createElement("rect", { x: "84", y: "78", width: "180", height: "8", rx: "4", fill: "#E9E2D6" }),
+        React.createElement("rect", { x: "84", y: "94", width: "150", height: "8", rx: "4", fill: "#E9E2D6" }),
         React.createElement("rect", { x: "84", y: "122", width: "90", height: "12", rx: "6", fill: "url(#hatch)" }),
-        React.createElement("rect", { x: "186", y: "122", width: "80", height: "12", rx: "6", fill: "#F7E3D2" }),
-        React.createElement("rect", { x: "84", y: "150", width: "200", height: "8", rx: "4", fill: "#FCEBDC" }),
-        React.createElement("rect", { x: "84", y: "166", width: "170", height: "8", rx: "4", fill: "#FCEBDC" }),
-        React.createElement("rect", { x: "84", y: "196", width: "180", height: "46", rx: "10", fill: "#FFEDD5" }),
-        React.createElement("text", { x: "98", y: "216", fontFamily: "Georgia, serif", fontSize: "13", fill: "#C2570D", fontWeight: "600" }, tr("Asking Price")),
-        React.createElement("text", { x: "98", y: "234", fontFamily: "Georgia, serif", fontSize: "17", fill: "#B8500F", fontWeight: "700" }, "QAR 1,200,000"),
+        React.createElement("rect", { x: "186", y: "122", width: "80", height: "12", rx: "6", fill: "#E9E2D6" }),
+        React.createElement("rect", { x: "84", y: "150", width: "200", height: "8", rx: "4", fill: "#F2EDE3" }),
+        React.createElement("rect", { x: "84", y: "166", width: "170", height: "8", rx: "4", fill: "#F2EDE3" }),
+        React.createElement("rect", { x: "84", y: "196", width: "180", height: "46", rx: "10", fill: "#F5EAD3" }),
+        React.createElement("text", { x: "98", y: "216", fontFamily: "Georgia, serif", fontSize: "13", fill: "#8F7333", fontWeight: "600" }, tr("Asking Price")),
+        React.createElement("text", { x: "98", y: "234", fontFamily: "Georgia, serif", fontSize: "17", fill: "#8A1538", fontWeight: "700" }, "QAR 1,200,000"),
         React.createElement("rect", { x: "84", y: "262", width: "140", height: "10", rx: "5", fill: "url(#hatch)" }),
-        React.createElement("rect", { x: "84", y: "286", width: "110", height: "8", rx: "4", fill: "#F7E3D2" }),
+        React.createElement("rect", { x: "84", y: "286", width: "110", height: "8", rx: "4", fill: "#E9E2D6" }),
         React.createElement("g", null,
-            React.createElement("circle", { cx: "330", cy: "270", r: "52", fill: "#B8500F" }),
-            React.createElement("circle", { cx: "330", cy: "270", r: "52", fill: "none", stroke: "#F97316", strokeWidth: "3", strokeDasharray: "6 7" }),
+            React.createElement("circle", { cx: "330", cy: "270", r: "52", fill: "#8A1538" }),
+            React.createElement("circle", { cx: "330", cy: "270", r: "52", fill: "none", stroke: "#C6A664", strokeWidth: "3", strokeDasharray: "6 7" }),
             React.createElement("g", { transform: "translate(330 264)" },
                 React.createElement("rect", { x: "-13", y: "-4", width: "26", height: "22", rx: "5", fill: "none", stroke: "#fff", strokeWidth: "2.6" }),
                 React.createElement("path", { d: "M -8 -4 v -6 a 8 8 0 0 1 16 0 v 6", fill: "none", stroke: "#fff", strokeWidth: "2.6" })),
             React.createElement("text", { x: "330", y: "304", textAnchor: "middle", fontFamily: "Georgia, serif", fontSize: "10.5", fill: "#fff", letterSpacing: "1.5" }, tr("CONFIDENTIAL"))),
-        React.createElement("rect", { x: "290", y: "60", width: "104", height: "34", rx: "17", fill: "#FFF1E4" }),
-        React.createElement("circle", { cx: "308", cy: "77", r: "7", fill: "#EA7A28" }),
+        React.createElement("rect", { x: "290", y: "60", width: "104", height: "34", rx: "17", fill: "#E7F2ED" }),
+        React.createElement("circle", { cx: "308", cy: "77", r: "7", fill: "#1F7A5C" }),
         React.createElement("path", { d: "M 304.8 77 l 2.4 2.4 l 4 -4.6", stroke: "#fff", strokeWidth: "1.8", fill: "none", strokeLinecap: "round" }),
-        React.createElement("text", { x: "322", y: "81", fontFamily: "sans-serif", fontSize: "11", fill: "#EA7A28", fontWeight: "700" }, tr("Verified"))));
+        React.createElement("text", { x: "322", y: "81", fontFamily: "sans-serif", fontSize: "11", fill: "#1F7A5C", fontWeight: "700" }, tr("Verified"))));
 }
 /* ================= HOMEPAGE ================= */
 function Home({ go }) {
@@ -989,7 +1036,7 @@ function Home({ go }) {
                         React.createElement("button", { className: "btn primary", onClick: () => go("browse") },
                             tr("Browse Opportunities "),
                             React.createElement(ArrowRight, { size: 16 })),
-                        React.createElement("button", { className: "btn ghost", onClick: () => go("sell-bz") }, tr("Sell Your Business"))),
+                        React.createElement("button", { className: "btn ghost", onClick: () => go("sell") }, tr("Sell Your Business"))),
                     React.createElement("div", { style: { display: "flex", gap: 22, marginTop: 34, flexWrap: "wrap", fontSize: 13.5, color: "var(--muted)", fontWeight: 600 } },
                         React.createElement("span", { style: { display: "flex", gap: 7, alignItems: "center" } },
                             React.createElement(Shield, { size: 16, color: "var(--teal)" }),
@@ -1045,7 +1092,7 @@ function Home({ go }) {
                 React.createElement("div", null,
                     React.createElement("div", { className: "eyebrow" }, tr("Privacy and Protection")),
                     React.createElement("h2", { className: "h2", style: { color: "#fff" } }, tr("Your Business Identity Remains Private")),
-                    React.createElement("p", { style: { color: "#F0CCA9", lineHeight: 1.7, marginTop: 16 } }, tr("Selling a business is sensitive. Staff, customers, suppliers, and landlords should not learn about a sale before you decide. Details may only be disclosed to qualified buyers during a phone call, a meeting, or an approved due diligence process.")),
+                    React.createElement("p", { style: { color: "#DFD2BD", lineHeight: 1.7, marginTop: 16 } }, tr("Selling a business is sensitive. Staff, customers, suppliers, and landlords should not learn about a sale before you decide. Details may only be disclosed to qualified buyers during a phone call, a meeting, or an approved due diligence process.")),
                     React.createElement("button", { className: "btn gold", style: { marginTop: 24 }, onClick: () => go("privacy-page") }, tr("Read our privacy approach"))),
                 React.createElement("div", { className: "card", style: { padding: 26, background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.12)" } },
                     React.createElement("div", { style: { fontSize: 13, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: 14 } }, tr("Always hidden from the public")),
@@ -1080,9 +1127,9 @@ function Home({ go }) {
                     " ",
                     t)))))),
         React.createElement("section", { className: "section", style: { paddingBottom: 90 } },
-            React.createElement("div", { className: "wrap card", style: { padding: "50px 36px", textAlign: "center", background: "linear-gradient(135deg,#B8500F,#9A4109)", border: "none" } },
+            React.createElement("div", { className: "wrap card", style: { padding: "50px 36px", textAlign: "center", background: "linear-gradient(135deg,#8A1538,#6E102C)", border: "none" } },
                 React.createElement("h2", { className: "h2", style: { color: "#fff" } }, tr("Thinking of Selling Your Business?")),
-                React.createElement("p", { style: { color: "#F0CCA9", maxWidth: "56ch", margin: "14px auto 26px", lineHeight: 1.65 } }, tr("Submit your information with complete privacy. Your business name and contact details will not be displayed publicly.")),
+                React.createElement("p", { style: { color: "#DFD2BD", maxWidth: "56ch", margin: "14px auto 26px", lineHeight: 1.65 } }, tr("Submit your information with complete privacy. Your business name and contact details will not be displayed publicly.")),
                 React.createElement("div", { style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } },
                     React.createElement("button", { className: "btn gold", onClick: () => go("sell-cr") }, tr("Sell a Commercial Registration")),
                     React.createElement("button", { className: "btn", style: { background: "#fff", color: "var(--ink)" }, onClick: () => go("sell-bz") }, tr("Sell a Running Business")))))));
@@ -1090,6 +1137,7 @@ function Home({ go }) {
 /* ================= BROWSE ================= */
 function Browse({ go, params }) {
     const pub = usePublished();
+    const [cat, setCat] = useState("");
     const [tab, setTab] = useState((params === null || params === void 0 ? void 0 : params.tab) || "cr");
     const [q, setQ] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
@@ -1104,7 +1152,7 @@ function Browse({ go, params }) {
         ["fin", "Audited financials"], ["assets", "Assets included"], ["lease", "Lease transferable"],
         ["transition", "Transition support"], ["neg", "Negotiable price"], ["urgent", "Urgent sale"],
     ];
-    const base = (pub || []).filter((l) => l.type === tab);
+    const base = (pub || []).filter((l) => l.type === tab && (!cat || l.category === cat));
     const results = base.filter((l) => {
         if (q && !(l.title + " " + l.category + " " + (l.activities || []).join(" ")).toLowerCase().includes(q.toLowerCase()))
             return false;
@@ -1143,6 +1191,9 @@ function Browse({ go, params }) {
                     React.createElement("div", { style: { flex: "2 1 240px", position: "relative" } },
                         React.createElement(Search, { size: 16, style: { position: "absolute", left: 13, top: 14, color: "var(--muted)" } }),
                         React.createElement("input", { className: "input", style: { paddingLeft: 38 }, placeholder: tab === "cr" ? "Search activities, e.g. trading, contracting" : "Search industry, e.g. restaurant, salon", value: q, onChange: (e) => setQ(e.target.value) })),
+                    React.createElement("select", { className: "input", style: { flex: "1 1 170px" }, value: cat, onChange: (e) => setCat(e.target.value) },
+                        React.createElement("option", { value: "" }, tr("All categories")),
+                        CATEGORIES.map((c) => React.createElement("option", { key: c, value: c }, tr(c)))),
                     React.createElement("select", { className: "input", style: { flex: "1 1 160px" }, value: maxPrice, onChange: (e) => setMaxPrice(e.target.value) },
                         React.createElement("option", { value: "" }, tr("Any asking price")),
                         React.createElement("option", { value: "100000" }, tr("Up to QAR 100,000")),
@@ -1387,7 +1438,7 @@ function ListingDetail({ params, go }) {
             intent && React.createElement(InquiryModal, { listing: l, intent: intent, onClose: () => setIntent(null) }))));
 }
 /* ================= WIZARD HELPERS ================= */
-function Wizard({ title, subtitle, steps, renderStep, onDone, doneRef, kind, getStructured, canNext }) {
+function Wizard({ title, subtitle, steps, renderStep, onDone, doneRef, kind, getStructured, canNext, canSubmit }) {
     const [i, setI] = useState(0);
     const [submitted, setSubmitted] = useState(false);
     const [busy, setBusy] = useState(false);
@@ -1395,6 +1446,7 @@ function Wizard({ title, subtitle, steps, renderStep, onDone, doneRef, kind, get
     const [serverRef, setServerRef] = useState(null);
     const ans = useRef({});
     useEffect(() => { WIZ_FILES = {}; }, []);
+    const [, bump] = useState(0);
     const grab = (e) => {
         const t = e.target;
         if (!t || t.type === "file")
@@ -1405,6 +1457,7 @@ function Wizard({ title, subtitle, steps, renderStep, onDone, doneRef, kind, get
         if (!key)
             return;
         ans.current[key] = t.type === "checkbox" ? (t.checked ? "Yes" : "No") : t.value;
+        bump((x) => x + 1);
     };
     const submitAll = async () => {
         setBusy(true);
@@ -1454,12 +1507,13 @@ function Wizard({ title, subtitle, steps, renderStep, onDone, doneRef, kind, get
                     steps.length)),
             React.createElement("div", { style: { marginTop: 16 }, onChangeCapture: grab }, renderStep(i)),
             err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginTop: 14 } }, err),
+            canNext && !canNext(i, ans.current) && i < steps.length - 1 && React.createElement("p", { className: "muted", style: { fontSize: 12.5, marginTop: 12 } }, tr("Please complete all fields to continue.")),
             React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginTop: 26, gap: 10 } },
                 React.createElement("button", { className: "btn light", onClick: () => setI(Math.max(0, i - 1)), disabled: i === 0 },
                     React.createElement(ChevronLeft, { size: 16 }),
                     " ",
                     tr("Back")),
-                last ? (React.createElement("button", { className: "btn gold", disabled: busy, onClick: submitAll },
+                last ? (React.createElement("button", { className: "btn gold", disabled: busy || (canSubmit && !canSubmit()), onClick: submitAll },
                     busy ? tr("Submitting…") : tr("Submit for review "),
                     React.createElement(ArrowRight, { size: 16 }))) : (React.createElement("button", { className: "btn primary", onClick: () => setI(i + 1) },
                     tr("Continue "),
@@ -1593,6 +1647,11 @@ function ContactStep() {
 function PriceStep({ s, set }) {
     return (React.createElement(React.Fragment, null,
         React.createElement("div", { className: "field" },
+            React.createElement("label", null, tr("Business category")),
+            React.createElement("select", { className: "input", value: s.category || "", onChange: (e) => set("category", e.target.value) },
+                React.createElement("option", { value: "" }, tr("Select a category")),
+                CATEGORIES.map((c) => React.createElement("option", { key: c, value: c }, tr(c))))),
+        React.createElement("div", { className: "field" },
             React.createElement("label", null, tr("Asking price (QAR)")),
             React.createElement("input", { className: "input", placeholder: tr("e.g. 120,000") })),
         React.createElement("div", { className: "field" },
@@ -1602,7 +1661,7 @@ function PriceStep({ s, set }) {
             React.createElement("label", null, tr("Reason for sale (optional)")),
             React.createElement("input", { className: "input", placeholder: tr("e.g. Relocating outside Qatar") }))));
 }
-function ReviewStep({ s, ex, kindLabel }) {
+function ReviewStep({ s, ex, kindLabel, setC }) {
     const F = (ex && ex.f) || {};
     return (React.createElement(React.Fragment, null,
         React.createElement("div", { className: "card", style: { padding: 18, marginBottom: 18, background: "var(--section)", border: "none" } },
@@ -1616,7 +1675,7 @@ function ReviewStep({ s, ex, kindLabel }) {
             "QatarBiz may contact me and prepare a listing.",
             "I understand commission may apply upon a successful transaction under a separate agreement.",
         ].map((t, k) => (React.createElement("label", { key: k, style: { display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13.5, lineHeight: 1.5, marginBottom: 10, cursor: "pointer" } },
-            React.createElement("input", { type: "checkbox", style: { marginTop: 3 } }),
+            React.createElement("input", { type: "checkbox", checked: !!s["c" + k], onChange: (e) => setC && setC("c" + k, e.target.checked), style: { marginTop: 3 } }),
             " ",
             React.createElement("span", null, tr(t)))))));
 }
@@ -1645,8 +1704,42 @@ function PhotosStep({ s, set }) {
             count < 5 && React.createElement("span", { className: "muted", style: { fontSize: 13 } }, tr("Minimum 5 photos required to continue.")))));
 }
 /* ================= SELL CR (4 quick steps) ================= */
-function SellCR() {
+function SellChoose({ go, user }) {
+    return (React.createElement("section", { className: "section grey", style: { paddingTop: 50, minHeight: "70vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 680 } },
+            React.createElement("div", { className: "eyebrow", style: { textAlign: "center" } }, tr("Sellers")),
+            React.createElement("h1", { className: "h2", style: { textAlign: "center", marginBottom: 10 } }, tr("What are you selling?")),
+            React.createElement("p", { className: "muted", style: { textAlign: "center", marginBottom: 30, lineHeight: 1.7 } }, tr("Choose the type of listing you want to create. The process takes less than 5 minutes.")),
+            React.createElement("div", { style: { display: "grid", gap: 18 } },
+                React.createElement("div", { className: "card", onClick: () => go("sell-cr"), role: "button", tabIndex: 0, style: { padding: 28, cursor: "pointer", display: "flex", gap: 20, alignItems: "center" } },
+                    React.createElement("div", { style: { width: 74, height: 74, borderRadius: 20, background: "linear-gradient(135deg, #8A1538, #6E102C)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } },
+                        React.createElement(FileText, { size: 36, color: "#fff" })),
+                    React.createElement("div", { style: { flex: 1 } },
+                        React.createElement("h3", { className: "h3", style: { marginBottom: 6 } }, tr("Commercial Registration")),
+                        React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.6 } }, tr("A registered company for sale without operations."))),
+                    React.createElement(ArrowRight, { size: 22, color: "var(--gold)" })),
+                React.createElement("div", { className: "card", onClick: () => go("sell-bz"), role: "button", tabIndex: 0, style: { padding: 28, cursor: "pointer", display: "flex", gap: 20, alignItems: "center" } },
+                    React.createElement("div", { style: { width: 74, height: 74, borderRadius: 20, background: "linear-gradient(135deg, #C6A664, #8F7333)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } },
+                        React.createElement(Store, { size: 36, color: "#fff" })),
+                    React.createElement("div", { style: { flex: 1 } },
+                        React.createElement("h3", { className: "h3", style: { marginBottom: 6 } }, tr("Running Business")),
+                        React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.6 } }, tr("An operating business for sale with staff and revenue."))),
+                    React.createElement(ArrowRight, { size: 22, color: "var(--gold)" }))))));
+}
+function AuthGate({ go }) {
+    return (React.createElement("section", { className: "section grey", style: { paddingTop: 60, minHeight: "60vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 480 } },
+            React.createElement("div", { className: "card", style: { padding: 32, textAlign: "center" } },
+                React.createElement("div", { style: { width: 70, height: 70, borderRadius: 20, background: "var(--gold-soft)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" } },
+                    React.createElement(Lock, { size: 32, color: "var(--gold)" })),
+                React.createElement("h2", { className: "h3", style: { marginBottom: 10 } }, tr("Create your account first")),
+                React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 20 } }, tr("To list with us you need a seller account. It takes under a minute, and lets you track and manage all your listings in one place.")),
+                React.createElement("button", { className: "btn primary", style: { justifyContent: "center", width: "100%" }, onClick: () => go("login") }, tr("Sign in or create account"))))));
+}
+function SellCR({ user, go }) {
     const [s, setS] = useState({});
+    if (!user)
+        return React.createElement(AuthGate, { go: go });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
     const steps = ["Contact Details", "Upload Commercial Registration", "Commercial Permit and Establishment Card", "Asking Price", "Review and Submit"];
@@ -1665,17 +1758,29 @@ function SellCR() {
                     React.createElement(YesNo, { value: s.card, onChange: (v) => set("card", v) })),
                 s.card === "Yes" && React.createElement(FakeUpload, { label: "Establishment Card (Computer Card)", hint: tr("PDF, JPG, or PNG"), uploaded: s.cardUp, onUpload: () => set("cardUp", true) })));
             case 3: return React.createElement(PriceStep, { s: s, set: set });
-            case 4: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Commercial Registration" });
+            case 4: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Commercial Registration", setC: set });
             default: return null;
         }
     };
     return (React.createElement("section", { className: "section grey", style: { paddingTop: 44 } },
         React.createElement("div", { className: "wrap" },
-            React.createElement(Wizard, { title: "Sell a Commercial Registration", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "cr", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })) }))));
+            React.createElement(Wizard, { title: "Sell a Commercial Registration", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "cr", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
+                    if (i === 0)
+                        return got(a, "Full name") && got(a, "Mobile number") && got(a, "Email address");
+                    if (i === 1)
+                        return !!ex && !ex.loading;
+                    if (i === 2)
+                        return !!s.permit && !!s.card && (s.permit !== "Yes" || !!s.permitUp) && (s.card !== "Yes" || !!s.cardUp);
+                    if (i === 3)
+                        return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
+                    return true;
+                }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
 }
 /* ================= SELL RUNNING BUSINESS (6 quick steps) ================= */
-function SellBZ() {
+function SellBZ({ user, go }) {
     const [s, setS] = useState({});
+    if (!user)
+        return React.createElement(AuthGate, { go: go });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
     const steps = ["Contact Details", "Upload Commercial Registration", "Business Photos", "Business Status", "Staff and Rent", "Asking Price", "Review and Submit"];
@@ -1715,20 +1820,34 @@ function SellBZ() {
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Monthly revenue (optional)")),
                     React.createElement("input", { className: "input", placeholder: tr("e.g. 120,000") }))));
-            case 6: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Running Business" });
+            case 6: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Running Business", setC: set });
             default: return null;
         }
     };
     return (React.createElement("section", { className: "section grey", style: { paddingTop: 44 } },
         React.createElement("div", { className: "wrap" },
-            React.createElement(Wizard, { title: "Sell a Running Business", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "bz", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i) => (i === 2 ? (s.photoCount || 0) >= 5 : true) }))));
+            React.createElement(Wizard, { title: "Sell a Running Business", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "bz", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
+                    if (i === 0)
+                        return got(a, "Full name") && got(a, "Mobile number") && got(a, "Email address");
+                    if (i === 1)
+                        return !!ex && !ex.loading;
+                    if (i === 2)
+                        return (s.photoCount || 0) >= 5;
+                    if (i === 3)
+                        return !!s.credit && !!s.cheq && !!s.aud;
+                    if (i === 4)
+                        return got(a, "Number of employees") && got(a, "Total monthly salaries (QAR)") && got(a, "Monthly rent (QAR)") && got(a, "Staff accommodation rent (QAR / month)");
+                    if (i === 5)
+                        return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
+                    return true;
+                }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
 }
 function downloadSocialCard(l, template = 0) {
     const c = document.createElement("canvas");
     c.width = 1080;
     c.height = 1080;
     const x = c.getContext("2d");
-    const navy = "#B8500F", deep = "#9A4109", gold = "#F97316", teal = "#EA7A28";
+    const navy = "#8A1538", deep = "#6E102C", gold = "#C6A664", teal = "#1F7A5C";
     // background
     if (template === 0) {
         x.fillStyle = navy;
@@ -1782,7 +1901,7 @@ function downloadSocialCard(l, template = 0) {
     x.fillStyle = gold;
     x.fillRect(240, 740, 600, 4);
     x.font = "400 28px Georgia";
-    x.fillStyle = template === 2 ? "#8A6A55" : "#F3C9A6";
+    x.fillStyle = template === 2 ? "#6B6257" : "#D9CBB6";
     x.fillText("ASKING PRICE", 540, 800);
     x.font = "700 66px Georgia";
     x.fillStyle = template === 2 ? navy : "#FFFFFF";
@@ -1864,6 +1983,53 @@ function DashShell({ title, user, setUser, children }) {
                 React.createElement("button", { className: "btn light sm", onClick: logout }, tr("Sign out"))),
             children)));
 }
+function SellerListingRow({ l, onSent }) {
+    const [open, setOpen] = useState(false);
+    const [f, setF] = useState({ price: "", neg: null, note: "" });
+    const [busy, setBusy] = useState(false);
+    const [done, setDone] = useState(false);
+    const send = async () => {
+        setBusy(true);
+        try {
+            await api.patch("/api/my/listings/" + l.id, { price: f.price, negotiable: f.neg === null ? undefined : f.neg === "Yes", note: f.note });
+            setDone(true);
+            setOpen(false);
+            onSent && onSent();
+        }
+        catch (e) { }
+        setBusy(false);
+    };
+    return (React.createElement("div", { className: "card", style: { padding: 20 } },
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 } },
+            React.createElement("div", null,
+                React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" } },
+                    React.createElement("span", { className: "ref" }, l.id),
+                    React.createElement("span", { className: "badge grey" }, l.type === "cr" ? tr("Commercial Registration") : tr("Running Business")),
+                    (l.hasEdit || done) && React.createElement("span", { className: "badge gold" }, tr("Changes pending broker approval"))),
+                React.createElement("div", { style: { fontWeight: 600, marginTop: 8 } },
+                    l.title ? tr(l.title) : "—",
+                    " ",
+                    l.price ? "· " + fmtQAR(l.price) : ""),
+                React.createElement("div", { className: "muted", style: { fontSize: 13, marginTop: 4 } },
+                    tr("Submitted on"),
+                    " ",
+                    new Date(l.createdAt).toLocaleDateString())),
+            React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center" } },
+                React.createElement("span", { className: "badge " + (l.status === "Published" ? "teal" : l.status === "Rejected" ? "gold" : "navy") }, tr(l.status)),
+                !l.hasEdit && !done && React.createElement("button", { className: "btn light sm", onClick: () => setOpen(!open) }, tr("Request changes")))),
+        open && (React.createElement("div", { style: { marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" } },
+            React.createElement("div", { className: "field" },
+                React.createElement("label", null, tr("New asking price (QAR)")),
+                React.createElement("input", { className: "input", value: f.price, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { price: e.target.value }))) })),
+            React.createElement("div", { className: "field" },
+                React.createElement("label", null, tr("Is the price negotiable?")),
+                React.createElement(YesNo, { value: f.neg, onChange: (v) => setF((s) => (Object.assign(Object.assign({}, s), { neg: v }))) })),
+            React.createElement("div", { className: "field" },
+                React.createElement("label", null, tr("Message to the broker")),
+                React.createElement("textarea", { className: "input", style: { minHeight: 60 }, value: f.note, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { note: e.target.value }))) })),
+            React.createElement("button", { className: "btn primary sm", disabled: busy || (!f.price && !f.note && f.neg === null), onClick: send }, tr("Send request")))),
+        done && React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 10 } }, tr("Request sent. Our broker will review and apply the changes."))));
+}
 function SellerDash({ go, user, setUser }) {
     const [items, setItems] = useState(null);
     useEffect(() => { api.get("/api/my/listings").then((d) => setItems(d.listings)).catch(() => setItems([])); }, []);
@@ -1872,17 +2038,7 @@ function SellerDash({ go, user, setUser }) {
         React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 16 } }, tr("Your submissions appear here with their live status. Your broker will contact you at every stage.")),
         React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } },
             React.createElement("button", { className: "btn primary sm", onClick: () => go("sell-cr") }, tr("Sell a Commercial Registration")),
-            React.createElement("button", { className: "btn light sm", onClick: () => go("sell-bz") }, tr("Sell a Running Business"))))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, items.map((l) => (React.createElement("div", { key: l.id, className: "card", style: { padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 } },
-        React.createElement("div", null,
-            React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" } },
-                React.createElement("span", { className: "ref" }, l.id),
-                React.createElement("span", { className: "badge grey" }, l.type === "cr" ? tr("Commercial Registration") : tr("Running Business"))),
-            React.createElement("div", { style: { fontWeight: 600, marginTop: 8 } }, l.title ? tr(l.title) : "—"),
-            React.createElement("div", { className: "muted", style: { fontSize: 13, marginTop: 4 } },
-                tr("Submitted on"),
-                " ",
-                new Date(l.createdAt).toLocaleDateString())),
-        React.createElement("span", { className: "badge " + (l.status === "Published" ? "teal" : l.status === "Rejected" ? "gold" : "navy") }, tr(l.status)))))))));
+            React.createElement("button", { className: "btn light sm", onClick: () => go("sell-bz") }, tr("Sell a Running Business"))))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, items.map((l) => React.createElement(SellerListingRow, { key: l.id, l: l, onSent: () => api.get("/api/my/listings").then((d) => setItems(d.listings)).catch(() => { }) }))))));
 }
 function BuyerDash({ go, user, setUser }) {
     const [items, setItems] = useState(null);
@@ -1996,7 +2152,10 @@ function AdminPanel({ go, user, setUser }) {
                                     React.createElement("td", { style: td },
                                         React.createElement("span", { className: "ref" }, l.id)),
                                     React.createElement("td", { style: td }, l.type === "cr" ? "CR" : "Business"),
-                                    React.createElement("td", { style: td }, l.title || React.createElement("span", { className: "muted" }, "(untitled \u2014 edit to publish)")),
+                                    React.createElement("td", { style: td },
+                                        l.title || React.createElement("span", { className: "muted" }, "(untitled \u2014 edit to publish)"),
+                                        l.editRequest && React.createElement("div", null,
+                                            React.createElement("span", { className: "badge gold", style: { marginTop: 6 } }, "\u270E Edit requested"))),
                                     React.createElement("td", { style: td }, l.price ? "QAR " + Number(l.price).toLocaleString() : "—"),
                                     React.createElement("td", { style: td },
                                         React.createElement("select", { className: "input", style: { padding: "6px 8px", fontSize: 13 }, value: l.status, onChange: (e) => setStatus(l.id, e.target.value) }, L_STATUSES.map((s) => React.createElement("option", { key: s }, s)))),
@@ -2010,6 +2169,17 @@ function AdminPanel({ go, user, setUser }) {
                                     React.createElement("td", { style: Object.assign(Object.assign({}, td), { background: "var(--section)" }), colSpan: 6 },
                                         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 18 } },
                                             React.createElement("div", null,
+                                                l.editRequest && (React.createElement("div", { style: { background: "#FDF6E3", border: "1px solid var(--gold)", borderRadius: 12, padding: 14, marginBottom: 16 } },
+                                                    React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 } },
+                                                        "Seller requested changes \u2014 ",
+                                                        new Date(l.editRequest.at).toLocaleString()),
+                                                    Object.entries(l.editRequest).filter(([k]) => k !== "at").map(([k, v]) => React.createElement(KV, { key: k, k: k, v: String(v) })),
+                                                    React.createElement("p", { className: "muted", style: { fontSize: 12.5, margin: "8px 0" } }, "Apply via Edit, then clear this request."),
+                                                    React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px" }, onClick: async () => { try {
+                                                            await api.patch("/api/admin/listings/" + l.id, { clearEdit: true });
+                                                            load();
+                                                        }
+                                                        catch (e) { } } }, "Clear request"))),
                                                 React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 } }, "Seller (private)"),
                                                 l.private && Object.keys(l.private).length ? Object.entries(l.private).map(([k, v]) => React.createElement(KV, { key: k, k: k, v: String(v) })) : React.createElement("p", { className: "muted", style: { fontSize: 13 } }, "\u2014"),
                                                 React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", margin: "14px 0 8px" } }, "Documents"),
@@ -2024,7 +2194,7 @@ function AdminPanel({ go, user, setUser }) {
                                                 React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 } }, "Submission answers"),
                                                 React.createElement("div", { style: { maxHeight: 300, overflowY: "auto", paddingInlineEnd: 6 } }, l.answers && Object.keys(l.answers).length ? Object.entries(l.answers).map(([k, v]) => v ? React.createElement(KV, { key: k, k: k, v: String(v) }) : null) : React.createElement("p", { className: "muted", style: { fontSize: 13 } }, "\u2014"))))))),
                                 edit && edit.id === l.id && (React.createElement("tr", null,
-                                    React.createElement("td", { style: Object.assign(Object.assign({}, td), { background: "#FFF4E8" }), colSpan: 6 },
+                                    React.createElement("td", { style: Object.assign(Object.assign({}, td), { background: "#F6F1E7" }), colSpan: 6 },
                                         React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 12 } },
                                             "Edit public listing \u2014 ",
                                             l.id),
@@ -2203,7 +2373,7 @@ function HowItWorks({ go }) {
                     React.createElement("p", { className: "muted", style: { fontSize: 14.5, lineHeight: 1.65 } }, d))))),
             React.createElement("div", { style: { display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" } },
                 React.createElement("button", { className: "btn primary", onClick: () => go("browse") }, tr("Browse Opportunities")),
-                React.createElement("button", { className: "btn ghost", onClick: () => go("sell-bz") }, tr("Sell Your Business"))))));
+                React.createElement("button", { className: "btn ghost", onClick: () => go("sell") }, tr("Sell Your Business"))))));
 }
 function PrivacyPage() {
     return (React.createElement("section", { className: "section", style: { paddingTop: 44 } },
@@ -2323,7 +2493,7 @@ class ErrorBoundary extends React.Component {
                 React.createElement("div", null,
                     React.createElement("h2", { style: { marginBottom: 10 } }, "QatarBiz"),
                     React.createElement("p", { style: { marginBottom: 16, color: "#666" } }, "Something went wrong displaying this page. / \u062D\u062F\u062B \u062E\u0637\u0623 \u0641\u064A \u0639\u0631\u0636 \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062D\u0629."),
-                    React.createElement("button", { onClick: () => window.location.reload(), style: { padding: "10px 22px", borderRadius: 10, border: "none", background: "#B8500F", color: "#fff", fontWeight: 600, cursor: "pointer" } }, "Reload / \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u062A\u062D\u0645\u064A\u0644"))));
+                    React.createElement("button", { onClick: () => window.location.reload(), style: { padding: "10px 22px", borderRadius: 10, border: "none", background: "#8A1538", color: "#fff", fontWeight: 600, cursor: "pointer" } }, "Reload / \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u062A\u062D\u0645\u064A\u0644"))));
         return this.props.children;
     }
 }
@@ -2346,8 +2516,9 @@ function App() {
         page === "home" && React.createElement(Home, { go: go }),
         page === "browse" && React.createElement(Browse, { go: go, params: params, key: (params === null || params === void 0 ? void 0 : params.tab) || "b" }),
         page === "listing" && React.createElement(ListingDetail, { go: go, params: params, key: params === null || params === void 0 ? void 0 : params.id }),
-        page === "sell-cr" && React.createElement(SellCR, null),
-        page === "sell-bz" && React.createElement(SellBZ, null),
+        page === "sell" && React.createElement(SellChoose, { go: go, user: user }),
+        page === "sell-cr" && React.createElement(SellCR, { user: user, go: go }),
+        page === "sell-bz" && React.createElement(SellBZ, { user: user, go: go }),
         page === "how" && React.createElement(HowItWorks, { go: go }),
         page === "privacy-page" && React.createElement(PrivacyPage, null),
         page === "about" && React.createElement(About, { go: go }),
