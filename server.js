@@ -205,8 +205,11 @@ async function handle(req, res) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return bad(res, 400, "Please enter a valid email address.");
     if (password.length < 8) return bad(res, 400, "Password must be at least 8 characters.");
     if (db.users.find((u) => u.email === email)) return bad(res, 409, "An account with this email already exists.");
+    const rawPhone = clean(b.phone, 40).replace(/[^0-9]/g, "");
+    const qatarPhone = rawPhone.replace(/^00974/, "").replace(/^974/, "");
+    if (!/^[3567][0-9]{7}$/.test(qatarPhone)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
     const u = { id: crypto.randomUUID(), email, pass: hashPassword(password),
-      name: clean(b.name, 120), phone: clean(b.phone, 40),
+      name: clean(b.name, 120), phone: "+974 " + qatarPhone,
       role: b.role === "buyer" ? "buyer" : "seller", createdAt: new Date().toISOString() };
     db.users.push(u); saveDBNow();
     const token = newSession(u.id);
@@ -260,6 +263,42 @@ async function handle(req, res) {
     return json(res, 200, { listing: publicView(l) });
   }
 
+
+  /* ---------- automatic CR reading (Claude API) ---------- */
+  if (p === "/api/extract" && req.method === "POST") {
+    if (!rateLimit(req, "extract", 30, 3600000)) return bad(res, 429, "Too many attempts. Try later.");
+    const buf = await readBody(req);
+    const mp = parseMultipart(buf, req.headers["content-type"]);
+    const f = mp && mp.files && mp.files[0];
+    if (!f) return bad(res, 400, "No file received");
+    const key = process.env.ANTHROPIC_API_KEY;
+    if (!key) return json(res, 200, { manual: true });
+    try {
+      const isPdf = /\.pdf$/i.test(f.filename);
+      const media = isPdf ? "application/pdf" : (/\.png$/i.test(f.filename) ? "image/png" : "image/jpeg");
+      const source = { type: "base64", media_type: media, data: f.data.toString("base64") };
+      const block = isPdf ? { type: "document", source } : { type: "image", source };
+      const prompt = "This is a Qatari Commercial Registration (السجل التجاري) document, in Arabic and/or English. Extract these fields and respond with ONLY a JSON object, no other text, no markdown fences: {\"businessName\": legal business name, \"crNumber\": CR number, \"legalForm\": legal form (e.g. W.L.L.), \"establishmentDate\": establishment/registration date, \"expiryDate\": expiry date, \"activities\": array of registered business activities in English}. Use empty string or [] for anything not found.";
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: [block, { type: "text", text: prompt }] }] }),
+      });
+      const d = await r.json();
+      const text = (d.content || []).map((c) => c.text || "").join("");
+      const jsonText = text.replace(/```json|```/g, "").trim();
+      const m = jsonText.match(/\{[\s\S]*\}/);
+      const fields = m ? JSON.parse(m[0]) : null;
+      if (!fields) return json(res, 200, { manual: true });
+      return json(res, 200, { fields: {
+        businessName: clean(fields.businessName, 200), crNumber: clean(fields.crNumber, 60),
+        legalForm: clean(fields.legalForm, 100), establishmentDate: clean(fields.establishmentDate, 60),
+        expiryDate: clean(fields.expiryDate, 60),
+        activities: Array.isArray(fields.activities) ? fields.activities.map((a) => clean(a, 120)).slice(0, 15) : [],
+      } });
+    } catch (e) { console.error("extract failed:", e.message); return json(res, 200, { manual: true }); }
+  }
+
   /* ---------- seller submission (multipart) ---------- */
   if (p === "/api/listings" && req.method === "POST") {
     if (!rateLimit(req, "submit", 20, 3600000)) return bad(res, 429, "Too many submissions. Try later.");
@@ -285,12 +324,24 @@ async function handle(req, res) {
       fs.writeFileSync(path.join(dir, stored), f.data);
       files.push({ label, name: safe, stored, size: f.data.length });
     }
+    const ex = (structured && structured.extracted) || {};
+    const yearM = String(ex.establishmentDate || "").match(/(19|20)\d\d/);
+    const priceEntry = Object.entries(rest).find(([k]) => /asking price|السعر المطلوب/i.test(k));
     const listing = {
       id, type, status: "Submitted", createdAt: new Date().toISOString(),
       sellerId: user ? user.id : null, sellerEmail: user ? user.email : (priv["Email address"] || priv["البريد الإلكتروني"] || null),
       answers: rest, private: priv, structured, files,
-      badges: [], activities: [], extraLicenses: [],
+      title: (type === "cr" ? "Commercial Registration for Sale" : "Running Business for Sale"),
+      established: yearM ? yearM[0] : "",
+      expiry: clean(ex.expiryDate, 60),
+      legalForm: clean(ex.legalForm, 100),
+      activities: Array.isArray(ex.activities) ? ex.activities.map((a) => clean(a, 120)).slice(0, 15) : [],
+      price: priceEntry ? (Number(String(priceEntry[1]).replace(/[^0-9.]/g, "")) || 0) : 0,
+      negotiable: structured && structured.neg === "Yes",
+      badges: ["Broker Managed"], extraLicenses: [],
     };
+    if (ex.businessName) listing.private["Legal business name (extracted)"] = clean(ex.businessName, 200);
+    if (ex.crNumber) listing.private["CR number (extracted)"] = clean(ex.crNumber, 60);
     db.listings.push(listing); saveDBNow();
     return json(res, 200, { ok: true, reference: id });
   }
