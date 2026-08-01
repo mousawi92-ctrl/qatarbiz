@@ -16,7 +16,6 @@
 <body>
 <div id="root"></div>
 <script>
-"use strict";
 const { useState, useEffect, useRef } = React;
 /* ============ INLINE ICON SET (lucide-style, dependency-free) ============ */
 const mkIcon = (svg) => ({ size = 24, color = "currentColor", strokeWidth = 2, style, className }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: strokeWidth, strokeLinecap: "round", strokeLinejoin: "round", style: style, className: className, dangerouslySetInnerHTML: { __html: svg } }));
@@ -584,6 +583,8 @@ const AR = {
     "Additional information for the broker ": "معلومات إضافية للوسيط "
 };
 const tr = (s) => (LANG === "ar" ? (AR[s] !== undefined ? AR[s] : s) : s);
+const fmtQAR = (n) => (n === 0 || n ? "QAR " + Number(n).toLocaleString() : "\u2014");
+const AGE = (y) => { const n = new Date().getFullYear() - Number(y); return isNaN(n) || n < 0 ? "\u2014" : n; };
 /* ============ API CLIENT ============ */
 const api = {
     async req(method, url, body, isForm) {
@@ -2302,6 +2303,19 @@ function Legal({ params }) {
             React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 20 } }, tr("Prototype content for demonstration. Final legal text to be prepared with Qatari counsel.")))));
 }
 /* ================= APP ROUTER ================= */
+export default class ErrorBoundary extends React.Component {
+    constructor(p) { super(p); this.state = { err: false }; }
+    static getDerivedStateFromError() { return { err: true }; }
+    render() {
+        if (this.state.err)
+            return (React.createElement("div", { style: { minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center", fontFamily: "sans-serif" } },
+                React.createElement("div", null,
+                    React.createElement("h2", { style: { marginBottom: 10 } }, "QatarBiz"),
+                    React.createElement("p", { style: { marginBottom: 16, color: "#666" } }, "Something went wrong displaying this page. / \u062D\u062F\u062B \u062E\u0637\u0623 \u0641\u064A \u0639\u0631\u0636 \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062D\u0629."),
+                    React.createElement("button", { onClick: () => window.location.reload(), style: { padding: "10px 22px", borderRadius: 10, border: "none", background: "#B8500F", color: "#fff", fontWeight: 600, cursor: "pointer" } }, "Reload / \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u062A\u062D\u0645\u064A\u0644"))));
+        return this.props.children;
+    }
+}
 function App() {
     const [route, setRoute] = useState({ page: "home", params: {} });
     const [lang, setLang] = useState("en");
@@ -2331,7 +2345,7 @@ function App() {
         page === "legal" && React.createElement(Legal, { params: params }),
         React.createElement(Footer, { go: go })));
 }
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(ErrorBoundary, null, React.createElement(App)));
 
 </script>
 </body>
