@@ -14,7 +14,7 @@
 (function(){
   function show(msg){
     var r=document.getElementById('root');
-    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#8A1538">QatarBiz — diagnostic (v5)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#F5EAD3;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#8A1538;color:#fff;font-weight:600">Reload</button></div>';
+    if(r) r.innerHTML='<div style="padding:40px 20px;font-family:sans-serif;max-width:680px;margin:0 auto"><h2 style="color:#8A1538">QatarBiz — diagnostic (v6)</h2><p style="color:#B00020;font-weight:600">A display error occurred. Please screenshot this page:</p><pre style="white-space:pre-wrap;background:#F5EAD3;padding:14px;border-radius:10px;font-size:13px;line-height:1.5">'+msg+'</pre><button onclick="location.reload()" style="margin-top:12px;padding:10px 22px;border:none;border-radius:10px;background:#8A1538;color:#fff;font-weight:600">Reload</button></div>';
   }
   window.addEventListener('error', function(e){ show((e.message||String(e.error))+'\n'+(e.filename||'')+' : line '+(e.lineno||'?')); });
   window.addEventListener('unhandledrejection', function(e){ show('Promise: '+(e.reason && e.reason.message || e.reason)); });
@@ -24,7 +24,7 @@
 <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 </head>
 <body>
-<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#8A1538"><h2 style="margin-bottom:8px">QatarBiz</h2><p>Loading… (build v5)</p></div></div>
+<div id="root"><div style="padding:60px 24px;font-family:sans-serif;text-align:center;color:#8A1538"><h2 style="margin-bottom:8px">QatarBiz</h2><p>Loading… (build v6)</p></div></div>
 <script>
 "use strict";
 const { useState, useEffect, useRef } = React;
@@ -640,6 +640,43 @@ let WIZ_FILES = {};
 const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefined ? a[tr(en)] : a[en]; return String(v || "").trim().length > 0; };
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Qatar's Business Marketplace": "سوق قطر للأعمال",
+    "Buy or Sell a Business in Qatar": "بِع أو اشترِ نشاطاً تجارياً في قطر",
+    "Commercial registrations and running businesses. We manage the deal from listing to signature, for a success-based commission.": "سجلات تجارية وأنشطة قائمة. ندير الصفقة من الإعلان حتى التوقيع، بعمولة عند النجاح فقط.",
+    "Sell": "بيع",
+    "Upload your CR": "ارفع سجلك التجاري",
+    "Our system reads it and builds your listing automatically.": "يقرأه نظامنا وينشئ إعلانك تلقائياً.",
+    "We verify and publish": "نتحقق وننشر",
+    "Your identity stays private. Buyers contact us, not you.": "هويتك تبقى خاصة. المشترون يتواصلون معنا، لا معك.",
+    "We close the deal": "نُتمّ الصفقة",
+    "Commission applies only when the sale completes.": "العمولة فقط عند إتمام البيع.",
+    "It takes less than 5 minutes. Your name is never shown publicly.": "يستغرق أقل من 5 دقائق. اسمك لا يُعرض للعامة أبداً.",
+    "Start now": "ابدأ الآن",
+    "New listings are being prepared. Check back soon or register your interest with an advisor.": "يجري إعداد عروض جديدة. عُد قريباً أو سجّل اهتمامك لدى مستشارنا.",
+    "Sign in with your mobile": "سجّل الدخول برقم جوالك",
+    "We will send you a 6-digit code.": "سنرسل لك رمزاً من 6 أرقام.",
+    "Send code by SMS": "إرسال الرمز برسالة نصية",
+    "Send code by WhatsApp": "إرسال الرمز عبر واتساب",
+    "Enter the 6-digit code": "أدخل الرمز المكوّن من 6 أرقام",
+    "Code sent to": "تم إرسال الرمز إلى",
+    "Verify and sign in": "تحقّق وسجّل الدخول",
+    "Change number": "تغيير الرقم",
+    "Resend code": "إعادة إرسال الرمز",
+    "What is your full name?": "ما اسمك الكامل؟",
+    "Continue": "متابعة",
+    "Admin or email sign-in": "دخول المشرف أو بالبريد الإلكتروني",
+    "Back to mobile sign-in": "العودة للدخول بالجوال",
+    "Test mode — your code is:": "وضع التجربة — رمزك هو:",
+    "Invalid or expired code.": "رمز غير صحيح أو منتهي.",
+    "My Listings": "إعلاناتي",
+    "My Inquiries": "استفساراتي",
+    "My Account": "حسابي",
+    "Post a new listing": "أضف إعلاناً جديداً",
+    "Continue with Google": "المتابعة بحساب جوجل", "or": "أو",
+    "One last step": "خطوة أخيرة",
+    "Please add your Qatari mobile number so our broker can contact you.": "يرجى إضافة رقم جوالك القطري ليتمكن الوسيط من التواصل معك.",
+    "Save and continue": "حفظ ومتابعة",
+    "Google sign-in is unavailable right now. Please use email and password.": "تسجيل الدخول بجوجل غير متاح حالياً. يرجى استخدام البريد وكلمة المرور.",
     "View": "عرض", "years": "سنة",
     "Restaurants and Cafes": "مطاعم ومقاهي", "Coffee Shops": "كوفي شوب", "Cafeterias": "كافتيريات",
     "Salons and Barbershops": "صالونات وحلاقة", "Beauty and Spa": "تجميل وسبا", "Cleaning Services": "خدمات تنظيف",
@@ -935,8 +972,7 @@ function Header({ go, page, user, setUser, lang, setLang }) {
     const [open, setOpen] = useState(false);
     const nav = (p, params) => { setOpen(false); go(p, params); };
     const links = [
-        ["home", "Home"], ["browse", "Browse Listings"], ["sell-cr", "Sell a CR"],
-        ["sell-bz", "Sell a Business"], ["how", "How It Works"], ["about", "About Us"], ["contact", "Contact"],
+        ["browse", "Browse Listings"], ["sell", "Sell"],
     ];
     return (React.createElement("header", { className: "hdr" },
         React.createElement("div", { className: "wrap hdr-in" },
@@ -1026,115 +1062,52 @@ function HeroArt() {
 function Home({ go }) {
     const pub = usePublished();
     return (React.createElement(React.Fragment, null,
-        React.createElement("section", { className: "hero" },
-            React.createElement("div", { className: "wrap hero-grid" },
-                React.createElement("div", null,
-                    React.createElement("div", { className: "eyebrow" }, tr("Qatar's Business Marketplace")),
-                    React.createElement("h1", { className: "h1" }, tr("Buy or Sell a Business in Qatar, Privately")),
-                    React.createElement("p", { className: "lead", style: { marginTop: 18 } }, tr("QatarBiz helps business owners sell commercial registrations and operating businesses through a private, broker-managed process. Your identity stays protected from first listing to final signature.")),
-                    React.createElement("div", { style: { display: "flex", gap: 12, marginTop: 28, flexWrap: "wrap" } },
-                        React.createElement("button", { className: "btn primary", onClick: () => go("browse") },
-                            tr("Browse Opportunities "),
-                            React.createElement(ArrowRight, { size: 16 })),
-                        React.createElement("button", { className: "btn ghost", onClick: () => go("sell") }, tr("Sell Your Business"))),
-                    React.createElement("div", { style: { display: "flex", gap: 22, marginTop: 34, flexWrap: "wrap", fontSize: 13.5, color: "var(--muted)", fontWeight: 600 } },
-                        React.createElement("span", { style: { display: "flex", gap: 7, alignItems: "center" } },
-                            React.createElement(Shield, { size: 16, color: "var(--teal)" }),
-                            " Identity never public"),
-                        React.createElement("span", { style: { display: "flex", gap: 7, alignItems: "center" } },
-                            React.createElement(Handshake, { size: 16, color: "var(--teal)" }),
-                            " Broker-managed deals"),
-                        React.createElement("span", { style: { display: "flex", gap: 7, alignItems: "center" } },
-                            React.createElement(Scale, { size: 16, color: "var(--teal)" }),
-                            " Success-based commission"))),
-                React.createElement(HeroArt, null))),
-        React.createElement("section", { className: "section" },
-            React.createElement("div", { className: "wrap" },
-                React.createElement("div", { className: "eyebrow" }, "What are you looking for?"),
-                React.createElement("h2", { className: "h2", style: { marginBottom: 30 } }, tr("Two ways to acquire in Qatar")),
-                React.createElement("div", { className: "grid2" },
-                    React.createElement("div", { className: "card", style: { padding: 30 } },
-                        React.createElement("div", { style: { width: 52, height: 52, borderRadius: 14, background: "var(--gold-soft)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 } },
-                            React.createElement(FileText, { size: 26, color: "var(--gold)" })),
-                        React.createElement("h3", { className: "h3" }, tr("Commercial Registration for Sale")),
-                        React.createElement("p", { className: "muted", style: { margin: "10px 0 22px", lineHeight: 1.6 } }, tr("Browse established commercial registrations with approved business activities, permits, and supporting documents.")),
-                        React.createElement("button", { className: "btn primary sm", onClick: () => go("browse", { tab: "cr" }) },
-                            tr("View CR Listings "),
-                            React.createElement(ArrowRight, { size: 15 }))),
-                    React.createElement("div", { className: "card", style: { padding: 30 } },
-                        React.createElement("div", { style: { width: 52, height: 52, borderRadius: 14, background: "var(--teal-soft)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 } },
-                            React.createElement(Store, { size: 26, color: "var(--teal)" })),
-                        React.createElement("h3", { className: "h3" }, tr("Running Business for Sale")),
-                        React.createElement("p", { className: "muted", style: { margin: "10px 0 22px", lineHeight: 1.6 } }, tr("Discover operating businesses with staff, premises, equipment, financial information, and existing operations.")),
-                        React.createElement("button", { className: "btn primary sm", onClick: () => go("browse", { tab: "bz" }) },
-                            tr("View Businesses "),
-                            React.createElement(ArrowRight, { size: 15 })))))),
-        React.createElement("section", { className: "section grey", id: "how" },
-            React.createElement("div", { className: "wrap" },
-                React.createElement("div", { className: "eyebrow" }, tr("How It Works")),
-                React.createElement("h2", { className: "h2", style: { marginBottom: 34 } }, tr("A managed process from listing to transfer")),
-                React.createElement("div", { className: "grid4" }, [
-                    [ClipboardList, "Submit with complete privacy", "The seller submits the listing and uploads supporting documents through a private form."],
-                    [FileSearch, "Broker review", "QatarBiz reviews the information and prepares a listing with identity removed."],
-                    [MessageSquare, "Buyers inquire", "Interested buyers contact QatarBiz through the website. No direct seller contact, ever."],
-                    [Handshake, "Managed transaction", "QatarBiz manages communication, negotiations, meetings, and transaction support to completion."],
-                ].map(([Icon, t, d], i) => (React.createElement("div", { key: t, className: "card", style: { padding: 24 } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 16 } },
-                        React.createElement(Icon, { size: 24, color: "var(--gold)" }),
-                        React.createElement("span", { className: "mono muted", style: { fontSize: 13 } },
-                            tr("Step"),
-                            " ",
-                            i + 1)),
-                    React.createElement("h3", { style: { fontSize: 16.5, marginBottom: 8 } }, t),
-                    React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.6 } }, d))))))),
-        React.createElement("section", { className: "section navy" },
-            React.createElement("div", { className: "wrap", style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48, alignItems: "center" } },
-                React.createElement("div", null,
-                    React.createElement("div", { className: "eyebrow" }, tr("Privacy and Protection")),
-                    React.createElement("h2", { className: "h2", style: { color: "#fff" } }, tr("Your Business Identity Remains Private")),
-                    React.createElement("p", { style: { color: "#DFD2BD", lineHeight: 1.7, marginTop: 16 } }, tr("Selling a business is sensitive. Staff, customers, suppliers, and landlords should not learn about a sale before you decide. Details may only be disclosed to qualified buyers during a phone call, a meeting, or an approved due diligence process.")),
-                    React.createElement("button", { className: "btn gold", style: { marginTop: 24 }, onClick: () => go("privacy-page") }, tr("Read our privacy approach"))),
-                React.createElement("div", { className: "card", style: { padding: 26, background: "rgba(255,255,255,.04)", border: "1px solid rgba(255,255,255,.12)" } },
-                    React.createElement("div", { style: { fontSize: 13, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: 14 } }, tr("Always hidden from the public")),
-                    ["Business name", "Owner name", "Phone number", "CR number", "Exact address", "Uploaded documents", "Identifying photos"].map((x) => (React.createElement("div", { key: x, style: { display: "flex", alignItems: "center", gap: 10, padding: "9px 0", borderBottom: "1px dashed rgba(255,255,255,.1)", fontSize: 14.5, color: "#DCE6F2" } },
-                        React.createElement(EyeOff, { size: 15, color: "var(--gold)" }),
+        React.createElement("section", { className: "section", style: { paddingTop: 64, paddingBottom: 40 } },
+            React.createElement("div", { className: "wrap", style: { maxWidth: 720, textAlign: "center" } },
+                React.createElement("div", { className: "eyebrow" }, tr("Qatar's Business Marketplace")),
+                React.createElement("h1", { className: "h1", style: { marginBottom: 16 } }, tr("Buy or Sell a Business in Qatar")),
+                React.createElement("p", { className: "muted", style: { fontSize: 17, lineHeight: 1.7, marginBottom: 28 } }, tr("Commercial registrations and running businesses. We manage the deal from listing to signature, for a success-based commission.")),
+                React.createElement("div", { style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } },
+                    React.createElement("button", { className: "btn primary", style: { fontSize: 16, padding: "14px 26px" }, onClick: () => go("browse") },
+                        tr("Browse Listings"),
                         " ",
-                        x)))))),
-        React.createElement("section", { className: "section" },
+                        React.createElement(ArrowRight, { size: 17 })),
+                    React.createElement("button", { className: "btn light", style: { fontSize: 16, padding: "14px 26px" }, onClick: () => go("sell") }, tr("Sell"))))),
+        React.createElement("section", { className: "section grey", style: { paddingTop: 40, paddingBottom: 40 } },
             React.createElement("div", { className: "wrap" },
-                React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12, marginBottom: 28 } },
+                React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 } }, [
+                    [FileText, "Upload your CR", "Our system reads it and builds your listing automatically."],
+                    [BadgeCheck, "We verify and publish", "Your identity stays private. Buyers contact us, not you."],
+                    [Handshake, "We close the deal", "Commission applies only when the sale completes."],
+                ].map(([Ic, t, d], i) => (React.createElement("div", { key: i, className: "card", style: { padding: 26, textAlign: "center" } },
+                    React.createElement("div", { style: { width: 68, height: 68, borderRadius: 20, background: "linear-gradient(135deg, #8A1538, #6E102C)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" } },
+                        React.createElement(Ic, { size: 32, color: "#fff" })),
+                    React.createElement("h3", { className: "h3", style: { fontSize: 16.5, marginBottom: 8 } }, tr(t)),
+                    React.createElement("p", { className: "muted", style: { fontSize: 13.5, lineHeight: 1.6 } }, tr(d)))))))),
+        React.createElement("section", { className: "section", style: { paddingTop: 44 } },
+            React.createElement("div", { className: "wrap" },
+                React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12, marginBottom: 22 } },
                     React.createElement("div", null,
                         React.createElement("div", { className: "eyebrow" }, tr("Featured Opportunities")),
-                        React.createElement("h2", { className: "h2" }, tr("Current listings"))),
+                        React.createElement("h2", { className: "h2", style: { fontSize: 28 } }, tr("Current listings"))),
                     React.createElement("button", { className: "btn light sm", onClick: () => go("browse") },
-                        tr("View all listings "),
+                        tr("View all listings"),
+                        " ",
                         React.createElement(ChevronRight, { size: 15 }))),
                 React.createElement("div", { className: "grid3" },
-                    (pub || []).slice(0, 3).map((l) => React.createElement(ListingCard, { key: l.id, l: l, go: go })),
+                    (pub || []).slice(0, 6).map((l) => React.createElement(ListingCard, { key: l.id, l: l, go: go })),
                     pub && pub.length === 0 && (React.createElement("div", { className: "card", style: { padding: 28, gridColumn: "1 / -1" } },
                         React.createElement("p", { className: "muted", style: { lineHeight: 1.7 } }, tr("New listings are being prepared. Check back soon or register your interest with an advisor."))))))),
-        React.createElement("section", { className: "section grey" },
+        React.createElement("section", { className: "section", style: { paddingBottom: 70 } },
             React.createElement("div", { className: "wrap" },
-                React.createElement("div", { className: "eyebrow" }, tr("Why QatarBiz")),
-                React.createElement("h2", { className: "h2", style: { marginBottom: 30 } }, tr("Brokerage, not classifieds")),
-                React.createElement("div", { className: "grid4", style: { gap: 18 } }, [
-                    [Lock, "Listings"], [MessageSquare, "Broker-managed communication"],
-                    [FileCheck2, "Document review"], [UserCheck, "Buyer qualification"],
-                    [Handshake, "Negotiation support"], [Briefcase, "Transaction assistance"],
-                    [Scale, "Success-based commission"], [Landmark, "Qatar market focus"],
-                ].map(([Icon, t]) => (React.createElement("div", { key: t, style: { display: "flex", gap: 12, alignItems: "center", background: "#fff", border: "1px solid var(--border)", borderRadius: 12, padding: "16px 18px", fontWeight: 600, fontSize: 14.5 } },
-                    React.createElement(Icon, { size: 20, color: "var(--teal)" }),
-                    " ",
-                    t)))))),
-        React.createElement("section", { className: "section", style: { paddingBottom: 90 } },
-            React.createElement("div", { className: "wrap card", style: { padding: "50px 36px", textAlign: "center", background: "linear-gradient(135deg,#8A1538,#6E102C)", border: "none" } },
-                React.createElement("h2", { className: "h2", style: { color: "#fff" } }, tr("Thinking of Selling Your Business?")),
-                React.createElement("p", { style: { color: "#DFD2BD", maxWidth: "56ch", margin: "14px auto 26px", lineHeight: 1.65 } }, tr("Submit your information with complete privacy. Your business name and contact details will not be displayed publicly.")),
-                React.createElement("div", { style: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" } },
-                    React.createElement("button", { className: "btn gold", onClick: () => go("sell-cr") }, tr("Sell a Commercial Registration")),
-                    React.createElement("button", { className: "btn", style: { background: "#fff", color: "var(--ink)" }, onClick: () => go("sell-bz") }, tr("Sell a Running Business")))))));
+                React.createElement("div", { style: { background: "linear-gradient(135deg, #8A1538, #6E102C)", borderRadius: 24, padding: "44px 28px", textAlign: "center", color: "#fff" } },
+                    React.createElement("h2", { className: "h2", style: { color: "#fff", fontSize: 26, marginBottom: 10 } }, tr("Thinking of Selling Your Business?")),
+                    React.createElement("p", { style: { opacity: .85, marginBottom: 22, lineHeight: 1.7 } }, tr("It takes less than 5 minutes. Your name is never shown publicly.")),
+                    React.createElement("button", { className: "btn gold", style: { fontSize: 16, padding: "14px 28px" }, onClick: () => go("sell") },
+                        tr("Start now"),
+                        " ",
+                        React.createElement(ArrowRight, { size: 17 })))))));
 }
-/* ================= BROWSE ================= */
 function Browse({ go, params }) {
     const pub = usePublished();
     const [cat, setCat] = useState("");
@@ -1736,18 +1709,19 @@ function AuthGate({ go }) {
                 React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 20 } }, tr("To list with us you need a seller account. It takes under a minute, and lets you track and manage all your listings in one place.")),
                 React.createElement("button", { className: "btn primary", style: { justifyContent: "center", width: "100%" }, onClick: () => go("login") }, tr("Sign in or create account"))))));
 }
-function SellCR({ user, go }) {
+function SellCR({ user, go, setUser }) {
     const [s, setS] = useState({});
     if (!user)
         return React.createElement(AuthGate, { go: go });
+    if (user.needsPhone)
+        return React.createElement(PhoneGate, { user: user, setUser: setUser });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
-    const steps = ["Contact Details", "Upload Commercial Registration", "Commercial Permit and Establishment Card", "Asking Price", "Review and Submit"];
+    const steps = ["Upload Commercial Registration", "Commercial Permit and Establishment Card", "Asking Price", "Review and Submit"];
     const render = (i) => {
         switch (i) {
-            case 0: return React.createElement(ContactStep, null);
-            case 1: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
-            case 2: return (React.createElement(React.Fragment, null,
+            case 0: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
+            case 1: return (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Does the Commercial Registration have an active Commercial Permit?")),
                     React.createElement(YesNo, { value: s.permit, onChange: (v) => set("permit", v) })),
@@ -1757,8 +1731,8 @@ function SellCR({ user, go }) {
                     React.createElement("label", null, tr("Does the company have an Establishment Card (Computer Card)?")),
                     React.createElement(YesNo, { value: s.card, onChange: (v) => set("card", v) })),
                 s.card === "Yes" && React.createElement(FakeUpload, { label: "Establishment Card (Computer Card)", hint: tr("PDF, JPG, or PNG"), uploaded: s.cardUp, onUpload: () => set("cardUp", true) })));
-            case 3: return React.createElement(PriceStep, { s: s, set: set });
-            case 4: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Commercial Registration", setC: set });
+            case 2: return React.createElement(PriceStep, { s: s, set: set });
+            case 3: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Commercial Registration", setC: set });
             default: return null;
         }
     };
@@ -1766,30 +1740,29 @@ function SellCR({ user, go }) {
         React.createElement("div", { className: "wrap" },
             React.createElement(Wizard, { title: "Sell a Commercial Registration", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "cr", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
                     if (i === 0)
-                        return got(a, "Full name") && got(a, "Mobile number") && got(a, "Email address");
-                    if (i === 1)
                         return !!ex && !ex.loading;
-                    if (i === 2)
+                    if (i === 1)
                         return !!s.permit && !!s.card && (s.permit !== "Yes" || !!s.permitUp) && (s.card !== "Yes" || !!s.cardUp);
-                    if (i === 3)
+                    if (i === 2)
                         return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
                     return true;
                 }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
 }
 /* ================= SELL RUNNING BUSINESS (6 quick steps) ================= */
-function SellBZ({ user, go }) {
+function SellBZ({ user, go, setUser }) {
     const [s, setS] = useState({});
     if (!user)
         return React.createElement(AuthGate, { go: go });
+    if (user.needsPhone)
+        return React.createElement(PhoneGate, { user: user, setUser: setUser });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
-    const steps = ["Contact Details", "Upload Commercial Registration", "Business Photos", "Business Status", "Staff and Rent", "Asking Price", "Review and Submit"];
+    const steps = ["Upload Commercial Registration", "Business Photos", "Business Status", "Staff and Rent", "Asking Price", "Review and Submit"];
     const render = (i) => {
         switch (i) {
-            case 0: return React.createElement(ContactStep, null);
-            case 1: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
-            case 2: return React.createElement(PhotosStep, { s: s, set: set });
-            case 3: return (React.createElement(React.Fragment, null,
+            case 0: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
+            case 1: return React.createElement(PhotosStep, { s: s, set: set });
+            case 2: return (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Is the company's credit bureau record clear?")),
                     React.createElement(YesNo, { value: s.credit, onChange: (v) => set("credit", v) })),
@@ -1802,7 +1775,7 @@ function SellBZ({ user, go }) {
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Are audited financial statements available?")),
                     React.createElement(YesNo, { value: s.aud, onChange: (v) => set("aud", v) }))));
-            case 4: return (React.createElement(React.Fragment, null,
+            case 3: return (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Number of employees")),
                     React.createElement("input", { className: "input" })),
@@ -1815,12 +1788,12 @@ function SellBZ({ user, go }) {
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Staff accommodation rent (QAR / month)")),
                     React.createElement("input", { className: "input" }))));
-            case 5: return (React.createElement(React.Fragment, null,
+            case 4: return (React.createElement(React.Fragment, null,
                 React.createElement(PriceStep, { s: s, set: set }),
                 React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Monthly revenue (optional)")),
                     React.createElement("input", { className: "input", placeholder: tr("e.g. 120,000") }))));
-            case 6: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Running Business", setC: set });
+            case 5: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Running Business", setC: set });
             default: return null;
         }
     };
@@ -1828,16 +1801,14 @@ function SellBZ({ user, go }) {
         React.createElement("div", { className: "wrap" },
             React.createElement(Wizard, { title: "Sell a Running Business", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "bz", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
                     if (i === 0)
-                        return got(a, "Full name") && got(a, "Mobile number") && got(a, "Email address");
-                    if (i === 1)
                         return !!ex && !ex.loading;
-                    if (i === 2)
+                    if (i === 1)
                         return (s.photoCount || 0) >= 5;
-                    if (i === 3)
+                    if (i === 2)
                         return !!s.credit && !!s.cheq && !!s.aud;
-                    if (i === 4)
+                    if (i === 3)
                         return got(a, "Number of employees") && got(a, "Total monthly salaries (QAR)") && got(a, "Monthly rent (QAR)") && got(a, "Staff accommodation rent (QAR / month)");
-                    if (i === 5)
+                    if (i === 4)
                         return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
                     return true;
                 }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
@@ -1920,54 +1891,155 @@ function downloadSocialCard(l, template = 0) {
 }
 /* ================= LOGIN ================= */
 function Login({ go, setUser }) {
-    const [mode, setMode] = useState("in");
-    const [f, setF] = useState({ email: "", pass: "", name: "", phone: "", role: "seller" });
-    const set = (k, v) => setF((s) => (Object.assign(Object.assign({}, s), { [k]: v })));
+    const [mode, setMode] = useState("otp"); // otp | email
+    const [step, setStep] = useState(1); // 1 phone, 2 code, 3 name
+    const [phone, setPhone] = useState("");
+    const [code, setCode] = useState("");
+    const [name, setName] = useState("");
+    const [sentTo, setSentTo] = useState("");
+    const [devCode, setDevCode] = useState("");
     const [busy, setBusy] = useState(false);
     const [err, setErr] = useState("");
-    const go2 = async () => {
+    const [f, setF] = useState({ email: "", pass: "" });
+    const send = async (channel) => {
         setBusy(true);
         setErr("");
         try {
-            const d = mode === "in"
-                ? await api.post("/api/login", { email: f.email, password: f.pass })
-                : await api.post("/api/register", { email: f.email, password: f.pass, name: f.name, phone: f.phone, role: f.role });
+            const d = await api.post("/api/otp/send", { phone, channel });
+            setSentTo(d.to);
+            setDevCode(d.devCode || "");
+            setStep(2);
+        }
+        catch (e) {
+            setErr(tr(e.message));
+        }
+        setBusy(false);
+    };
+    const verify = async () => {
+        setBusy(true);
+        setErr("");
+        try {
+            const d = await api.post("/api/otp/check", { phone, code, name });
+            if (d.user.needsName) {
+                setStep(3);
+            }
+            else {
+                setUser(d.user);
+            }
+        }
+        catch (e) {
+            setErr(tr(e.message));
+        }
+        setBusy(false);
+    };
+    const saveName = async () => {
+        setBusy(true);
+        setErr("");
+        try {
+            await api.patch("/api/me/name", { name });
+            const d = await api.get("/api/me");
             setUser(d.user);
         }
         catch (e) {
-            setErr(e.message);
+            setErr(tr(e.message));
+        }
+        setBusy(false);
+    };
+    const emailGo = async () => {
+        setBusy(true);
+        setErr("");
+        try {
+            const d = await api.post("/api/login", { email: f.email, password: f.pass });
+            setUser(d.user);
+        }
+        catch (e) {
+            setErr(tr(e.message));
         }
         setBusy(false);
     };
     return (React.createElement("section", { className: "section", style: { paddingTop: 60, minHeight: "60vh" } },
         React.createElement("div", { className: "wrap", style: { maxWidth: 420 } },
-            React.createElement("div", { className: "eyebrow" }, tr("My account")),
-            React.createElement("h1", { className: "h2", style: { marginBottom: 18 } }, mode === "in" ? tr("Welcome back") : tr("Create account")),
-            React.createElement("div", { className: "card", style: { padding: 26 } },
-                React.createElement("div", { className: "seg", style: { marginBottom: 18 } },
-                    React.createElement("button", { className: mode === "in" ? "on" : "", onClick: () => setMode("in") }, tr("Sign in")),
-                    React.createElement("button", { className: mode === "up" ? "on" : "", onClick: () => setMode("up") }, tr("Create account"))),
-                mode === "up" && (React.createElement(React.Fragment, null,
-                    React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Full name")),
-                        React.createElement("input", { className: "input", value: f.name, onChange: (e) => set("name", e.target.value) })),
+            React.createElement("div", { style: { textAlign: "center", marginBottom: 22 } },
+                React.createElement("div", { style: { display: "inline-block" } },
+                    React.createElement(Logo, null))),
+            React.createElement("div", { className: "card", style: { padding: 28 } },
+                mode === "otp" && step === 1 && (React.createElement(React.Fragment, null,
+                    React.createElement("h1", { className: "h3", style: { marginBottom: 6 } }, tr("Sign in with your mobile")),
+                    React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 18, lineHeight: 1.6 } }, tr("We will send you a 6-digit code.")),
                     React.createElement("div", { className: "field" },
                         React.createElement("label", null, tr("Mobile number")),
-                        React.createElement("input", { className: "input", placeholder: "+974 3XXX XXXX", value: f.phone, onChange: (e) => set("phone", e.target.value) }),
+                        React.createElement("input", { className: "input", type: "tel", placeholder: "+974 3XXX XXXX", value: phone, onChange: (e) => setPhone(e.target.value), style: { fontSize: 17, letterSpacing: ".03em" } }),
                         React.createElement("div", { className: "muted", style: { fontSize: 12, marginTop: 4 } }, tr("Qatari mobile numbers only"))),
+                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 10 }, disabled: busy || !phone, onClick: () => send("sms") }, tr("Send code by SMS")),
+                    React.createElement("button", { className: "btn", style: { width: "100%", justifyContent: "center", background: "#25D366", color: "#fff" }, disabled: busy || !phone, onClick: () => send("whatsapp") },
+                        React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "currentColor" },
+                            React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" })),
+                        tr("Send code by WhatsApp")))),
+                mode === "otp" && step === 2 && (React.createElement(React.Fragment, null,
+                    React.createElement("h1", { className: "h3", style: { marginBottom: 6 } }, tr("Enter the 6-digit code")),
+                    React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 6 } },
+                        tr("Code sent to"),
+                        " ",
+                        React.createElement("strong", null, sentTo)),
+                    devCode && React.createElement("div", { className: "notice", style: { marginBottom: 12, fontSize: 14 } },
+                        tr("Test mode — your code is:"),
+                        " ",
+                        React.createElement("strong", { style: { fontSize: 17, letterSpacing: ".2em" } }, devCode)),
                     React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Buyer type")),
-                        React.createElement("div", { className: "seg" },
-                            React.createElement("button", { className: f.role === "seller" ? "on" : "", onClick: () => set("role", "seller") }, tr("Seller account")),
-                            React.createElement("button", { className: f.role === "buyer" ? "on" : "", onClick: () => set("role", "buyer") }, tr("Buyer account")))))),
+                        React.createElement("input", { className: "input", type: "tel", inputMode: "numeric", maxLength: 6, placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022", value: code, onChange: (e) => setCode(e.target.value.replace(/[^0-9]/g, "")), onKeyDown: (e) => e.key === "Enter" && code.length === 6 && verify(), style: { fontSize: 26, letterSpacing: ".45em", textAlign: "center" } })),
+                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 12 }, disabled: busy || code.length !== 6, onClick: verify }, tr("Verify and sign in")),
+                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 13.5 } },
+                        React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => { setStep(1); setCode(""); setErr(""); } }, tr("Change number")),
+                        React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => send("sms") }, tr("Resend code"))))),
+                mode === "otp" && step === 3 && (React.createElement(React.Fragment, null,
+                    React.createElement("h1", { className: "h3", style: { marginBottom: 14 } }, tr("What is your full name?")),
+                    React.createElement("div", { className: "field" },
+                        React.createElement("label", null, tr("Full name")),
+                        React.createElement("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), onKeyDown: (e) => e.key === "Enter" && saveName() })),
+                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || name.trim().length < 2, onClick: saveName }, tr("Continue")))),
+                mode === "email" && (React.createElement(React.Fragment, null,
+                    React.createElement("h1", { className: "h3", style: { marginBottom: 14 } }, tr("Sign in")),
+                    React.createElement("div", { className: "field" },
+                        React.createElement("label", null, tr("Email address")),
+                        React.createElement("input", { className: "input", type: "email", placeholder: "you@email.com", value: f.email, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { email: e.target.value }))) })),
+                    React.createElement("div", { className: "field" },
+                        React.createElement("label", null, tr("Password")),
+                        React.createElement("input", { className: "input", type: "password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", value: f.pass, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { pass: e.target.value }))), onKeyDown: (e) => e.key === "Enter" && emailGo() })),
+                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !f.email || !f.pass, onClick: emailGo }, tr("Sign in"))))),
+            React.createElement("p", { style: { textAlign: "center", marginTop: 16 } },
+                React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none" }, onClick: () => { setMode(mode === "otp" ? "email" : "otp"); setErr(""); } }, mode === "otp" ? tr("Admin or email sign-in") : tr("Back to mobile sign-in"))))));
+}
+function PhoneGate({ user, setUser }) {
+    const [phone, setPhone] = useState("");
+    const [busy, setBusy] = useState(false);
+    const [err, setErr] = useState("");
+    const save = async () => {
+        setBusy(true);
+        setErr("");
+        try {
+            await api.patch("/api/me/phone", { phone });
+            setUser(Object.assign(Object.assign({}, user), { needsPhone: false }));
+        }
+        catch (e) {
+            setErr(tr(e.message));
+        }
+        setBusy(false);
+    };
+    return (React.createElement("section", { className: "section grey", style: { paddingTop: 60, minHeight: "60vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 440 } },
+            React.createElement("div", { className: "card", style: { padding: 30 } },
+                React.createElement("h2", { className: "h3", style: { marginBottom: 8 } }, tr("One last step")),
+                React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 18 } }, tr("Please add your Qatari mobile number so our broker can contact you.")),
                 React.createElement("div", { className: "field" },
-                    React.createElement("label", null, tr("Email address")),
-                    React.createElement("input", { className: "input", type: "email", placeholder: "you@email.com", value: f.email, onChange: (e) => set("email", e.target.value) })),
-                React.createElement("div", { className: "field" },
-                    React.createElement("label", null, tr("Password")),
-                    React.createElement("input", { className: "input", type: "password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", value: f.pass, onChange: (e) => set("pass", e.target.value), onKeyDown: (e) => e.key === "Enter" && go2() })),
-                err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, tr(err)),
-                React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !f.email || !f.pass, onClick: go2 }, busy ? tr("Signing in…") : mode === "in" ? tr("Sign in") : tr("Create account"))))));
+                    React.createElement("label", null, tr("Mobile number")),
+                    React.createElement("input", { className: "input", placeholder: "+974 3XXX XXXX", value: phone, onChange: (e) => setPhone(e.target.value), onKeyDown: (e) => e.key === "Enter" && save() }),
+                    React.createElement("div", { className: "muted", style: { fontSize: 12, marginTop: 4 } }, tr("Qatari mobile numbers only"))),
+                err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 10 } }, err),
+                React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !phone, onClick: save }, busy ? tr("Saving…") : tr("Save and continue"))))));
 }
 function DashShell({ title, user, setUser, children }) {
     const logout = async () => { try {
@@ -2030,30 +2102,29 @@ function SellerListingRow({ l, onSent }) {
             React.createElement("button", { className: "btn primary sm", disabled: busy || (!f.price && !f.note && f.neg === null), onClick: send }, tr("Send request")))),
         done && React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 10 } }, tr("Request sent. Our broker will review and apply the changes."))));
 }
-function SellerDash({ go, user, setUser }) {
-    const [items, setItems] = useState(null);
-    useEffect(() => { api.get("/api/my/listings").then((d) => setItems(d.listings)).catch(() => setItems([])); }, []);
-    return (React.createElement(DashShell, { title: "Seller Dashboard", user: user, setUser: setUser }, items === null ? React.createElement("p", { className: "muted" }, tr("Loading…")) : items.length === 0 ? (React.createElement("div", { className: "card", style: { padding: 28 } },
-        React.createElement("h3", { className: "h3", style: { marginBottom: 8 } }, tr("No listings yet.")),
-        React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 16 } }, tr("Your submissions appear here with their live status. Your broker will contact you at every stage.")),
-        React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap" } },
-            React.createElement("button", { className: "btn primary sm", onClick: () => go("sell-cr") }, tr("Sell a Commercial Registration")),
-            React.createElement("button", { className: "btn light sm", onClick: () => go("sell-bz") }, tr("Sell a Running Business"))))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, items.map((l) => React.createElement(SellerListingRow, { key: l.id, l: l, onSent: () => api.get("/api/my/listings").then((d) => setItems(d.listings)).catch(() => { }) }))))));
-}
-function BuyerDash({ go, user, setUser }) {
-    const [items, setItems] = useState(null);
-    useEffect(() => { api.get("/api/my/inquiries").then((d) => setItems(d.inquiries)).catch(() => setItems([])); }, []);
-    return (React.createElement(DashShell, { title: "Buyer Dashboard", user: user, setUser: setUser }, items === null ? React.createElement("p", { className: "muted" }, tr("Loading…")) : items.length === 0 ? (React.createElement("div", { className: "card", style: { padding: 28 } },
-        React.createElement("h3", { className: "h3", style: { marginBottom: 8 } }, tr("No inquiries yet.")),
-        React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 16 } }, tr("Your inquiries and their status appear here after you contact us about a listing.")),
-        React.createElement("button", { className: "btn primary sm", onClick: () => go("browse") }, tr("Browse Listings")))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, items.map((q) => (React.createElement("div", { key: q.id, className: "card", style: { padding: 20, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 } },
-        React.createElement("div", null,
-            React.createElement("span", { className: "ref" }, q.listingId),
-            React.createElement("div", { className: "muted", style: { fontSize: 13, marginTop: 6 } },
-                new Date(q.createdAt).toLocaleDateString(),
-                " \u00B7 ",
-                q.intent)),
-        React.createElement("span", { className: "badge navy" }, q.status))))))));
+function AccountDash({ go, user, setUser }) {
+    const [ls, setLs] = useState(null);
+    const [qs, setQs] = useState(null);
+    const load = () => {
+        api.get("/api/my/listings").then((d) => setLs(d.listings)).catch(() => setLs([]));
+        api.get("/api/my/inquiries").then((d) => setQs(d.inquiries)).catch(() => setQs([]));
+    };
+    useEffect(() => { load(); }, []);
+    return (React.createElement(DashShell, { title: "My Account", user: user, setUser: setUser },
+        React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 24 } },
+            React.createElement("button", { className: "btn primary sm", onClick: () => go("sell") }, tr("Post a new listing")),
+            React.createElement("button", { className: "btn light sm", onClick: () => go("browse") }, tr("Browse Listings"))),
+        React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 12 } }, tr("My Listings")),
+        ls === null ? React.createElement("p", { className: "muted" }, tr("Loading…")) : ls.length === 0 ? (React.createElement("p", { className: "muted", style: { marginBottom: 8 } }, tr("No listings yet."))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, ls.map((l) => React.createElement(SellerListingRow, { key: l.id, l: l, onSent: load })))),
+        React.createElement("h3", { className: "h3", style: { fontSize: 17, margin: "28px 0 12px" } }, tr("My Inquiries")),
+        qs === null ? React.createElement("p", { className: "muted" }, tr("Loading…")) : qs.length === 0 ? (React.createElement("p", { className: "muted" }, tr("No inquiries yet."))) : (React.createElement("div", { style: { display: "grid", gap: 12 } }, qs.map((q) => (React.createElement("div", { key: q.id, className: "card", style: { padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 } },
+            React.createElement("div", null,
+                React.createElement("span", { className: "ref" }, q.listingId),
+                React.createElement("div", { className: "muted", style: { fontSize: 13, marginTop: 6 } },
+                    new Date(q.createdAt).toLocaleDateString(),
+                    " \u00B7 ",
+                    q.intent)),
+            React.createElement("span", { className: "badge navy" }, q.status))))))));
 }
 /* ================= ADMIN (LIVE) ================= */
 const L_STATUSES = ["Submitted", "Under Review", "Additional Information Required", "Approved", "Published", "Paused", "Under Negotiation", "Offer Received", "Transaction in Progress", "Sold", "Rejected", "Withdrawn"];
@@ -2502,7 +2573,15 @@ function App() {
     const [lang, setLang] = useState("en");
     LANG = lang;
     const [user, setUser] = useState(null);
-    useEffect(() => { api.get("/api/me").then((d) => setUser(d.user)).catch(() => { }); }, []);
+    useEffect(() => {
+        api.get("/api/me").then((d) => {
+            setUser(d.user);
+            if (typeof window !== "undefined" && window.location.hash === "#account") {
+                setRoute({ page: "login", params: {} });
+                history.replaceState(null, "", "/");
+            }
+        }).catch(() => { });
+    }, []);
     const go = (page, params = {}) => { setRoute({ page, params }); window.scrollTo({ top: 0 }); };
     useEffect(() => {
         const el = document.createElement("style");
@@ -2517,13 +2596,13 @@ function App() {
         page === "browse" && React.createElement(Browse, { go: go, params: params, key: (params === null || params === void 0 ? void 0 : params.tab) || "b" }),
         page === "listing" && React.createElement(ListingDetail, { go: go, params: params, key: params === null || params === void 0 ? void 0 : params.id }),
         page === "sell" && React.createElement(SellChoose, { go: go, user: user }),
-        page === "sell-cr" && React.createElement(SellCR, { user: user, go: go }),
-        page === "sell-bz" && React.createElement(SellBZ, { user: user, go: go }),
+        page === "sell-cr" && React.createElement(SellCR, { user: user, go: go, setUser: setUser }),
+        page === "sell-bz" && React.createElement(SellBZ, { user: user, go: go, setUser: setUser }),
         page === "how" && React.createElement(HowItWorks, { go: go }),
         page === "privacy-page" && React.createElement(PrivacyPage, null),
         page === "about" && React.createElement(About, { go: go }),
         page === "contact" && React.createElement(Contact, null),
-        page === "login" && (user ? (user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : user.role === "seller" ? React.createElement(SellerDash, { go: go, user: user, setUser: setUser }) : React.createElement(BuyerDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),
+        page === "login" && (user ? (user.needsPhone ? React.createElement(PhoneGate, { user: user, setUser: setUser }) : user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : React.createElement(AccountDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),
         page === "legal" && React.createElement(Legal, { params: params }),
         React.createElement(Footer, { go: go })));
 }

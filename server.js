@@ -102,6 +102,9 @@ const clean = (v, max = 500) => String(v == null ? "" : v).slice(0, max).trim();
 
 /* naive per-IP rate limit for auth endpoints */
 const hits = new Map();
+const oauthStates = new Map();
+const otps = new Map();
+setInterval(() => { const now = Date.now(); for (const [k, t] of oauthStates) if (now - t > 600000) oauthStates.delete(k); }, 60000).unref();
 function rateLimit(req, key, max, windowMs) {
   const ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "?").split(",")[0].trim();
   const k = key + ":" + ip;
@@ -198,6 +201,152 @@ async function handle(req, res) {
   const isAdmin = user && user.role === "admin";
 
   /* ---------- auth ---------- */
+
+  /* ---------- OTP sign-in (SMS / WhatsApp via Twilio Verify; dev mode without it) ---------- */
+  if (p === "/api/otp/send" && req.method === "POST") {
+    if (!rateLimit(req, "otp", 8, 900000)) return bad(res, 429, "Too many attempts. Try again in 15 minutes.");
+    const b = parseJSONBody(await readBody(req));
+    const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
+    const qat = raw.replace(/^00974/, "").replace(/^974/, "");
+    if (!/^[3567][0-9]{7}$/.test(qat)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
+    const to = "+974" + qat;
+    const channel = b.channel === "whatsapp" ? "whatsapp" : "sms";
+    const { TWILIO_ACCOUNT_SID: SID, TWILIO_AUTH_TOKEN: TOK, TWILIO_VERIFY_SID: VSID } = process.env;
+    if (SID && TOK && VSID) {
+      try {
+        const r = await fetch("https://verify.twilio.com/v2/Services/" + VSID + "/Verifications", {
+          method: "POST",
+          headers: { "content-type": "application/x-www-form-urlencoded", Authorization: "Basic " + Buffer.from(SID + ":" + TOK).toString("base64") },
+          body: new URLSearchParams({ To: to, Channel: channel }).toString(),
+        });
+        const d = await r.json();
+        if (d.status !== "pending") throw new Error(d.message || "send failed");
+        return json(res, 200, { ok: true, to: "+974 " + qat });
+      } catch (e) { console.error("otp send failed:", e.message); return bad(res, 500, "Could not send the code. Please try again."); }
+    }
+    // dev mode: no Twilio configured — return code so the flow can be tested
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    otps.set(to, { code, exp: Date.now() + 600000, tries: 0 });
+    return json(res, 200, { ok: true, to: "+974 " + qat, devCode: code });
+  }
+
+  if (p === "/api/otp/check" && req.method === "POST") {
+    if (!rateLimit(req, "otpc", 15, 900000)) return bad(res, 429, "Too many attempts. Try again in 15 minutes.");
+    const b = parseJSONBody(await readBody(req));
+    const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
+    const qat = raw.replace(/^00974/, "").replace(/^974/, "");
+    if (!/^[3567][0-9]{7}$/.test(qat)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
+    const to = "+974" + qat;
+    const code = clean(b && b.code, 10).replace(/[^0-9]/g, "");
+    const { TWILIO_ACCOUNT_SID: SID, TWILIO_AUTH_TOKEN: TOK, TWILIO_VERIFY_SID: VSID } = process.env;
+    let approved = false;
+    if (SID && TOK && VSID) {
+      try {
+        const r = await fetch("https://verify.twilio.com/v2/Services/" + VSID + "/VerificationCheck", {
+          method: "POST",
+          headers: { "content-type": "application/x-www-form-urlencoded", Authorization: "Basic " + Buffer.from(SID + ":" + TOK).toString("base64") },
+          body: new URLSearchParams({ To: to, Code: code }).toString(),
+        });
+        const d = await r.json();
+        approved = d.status === "approved";
+      } catch (e) { console.error("otp check failed:", e.message); }
+    } else {
+      const rec = otps.get(to);
+      if (rec && rec.exp > Date.now() && rec.tries < 6) {
+        rec.tries++;
+        if (rec.code === code) { approved = true; otps.delete(to); }
+      }
+    }
+    if (!approved) return bad(res, 401, "Invalid or expired code.");
+    const phoneFmt = "+974 " + qat;
+    let u = db.users.find((x) => x.phone === phoneFmt);
+    if (!u) {
+      u = { id: crypto.randomUUID(), email: "", pass: hashPassword(crypto.randomBytes(24).toString("hex")),
+        name: clean(b && b.name, 120), phone: phoneFmt, role: "member", createdAt: new Date().toISOString() };
+      db.users.push(u); saveDBNow();
+    } else if (b && b.name && !u.name) { u.name = clean(b.name, 120); saveDBNow(); }
+    const token = newSession(u.id);
+    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role, phone: u.phone, needsPhone: false, needsName: !u.name } }, { "Set-Cookie": sessionCookie(req, token) });
+  }
+
+  if (p === "/api/me/name" && req.method === "PATCH") {
+    if (!user) return bad(res, 401, "Not signed in");
+    const b = parseJSONBody(await readBody(req));
+    const name = clean(b && b.name, 120);
+    if (name.length < 2) return bad(res, 400, "Please enter your full name.");
+    user.name = name; saveDBNow();
+    return json(res, 200, { ok: true });
+  }
+
+  /* ---------- Google sign-in ---------- */
+  if (p === "/api/config" && req.method === "GET") {
+    return json(res, 200, { google: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) });
+  }
+
+  if (p === "/api/auth/google" && req.method === "GET") {
+    const cid = process.env.GOOGLE_CLIENT_ID;
+    if (!cid) { res.writeHead(302, { Location: "/?authError=google" }); return res.end(); }
+    const state = crypto.randomBytes(16).toString("hex");
+    oauthStates.set(state, Date.now());
+    const proto = req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+    const redirect = proto + "://" + req.headers.host + "/api/auth/google/callback";
+    const u = "https://accounts.google.com/o/oauth2/v2/auth?" + new URLSearchParams({
+      client_id: cid, redirect_uri: redirect, response_type: "code",
+      scope: "openid email profile", state, prompt: "select_account",
+    }).toString();
+    res.writeHead(302, { Location: u });
+    return res.end();
+  }
+
+  if (p === "/api/auth/google/callback" && req.method === "GET") {
+    try {
+      const code = url.searchParams.get("code");
+      const state = url.searchParams.get("state");
+      if (!code || !state || !oauthStates.has(state)) throw new Error("bad state");
+      oauthStates.delete(state);
+      const proto = req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+      const redirect = proto + "://" + req.headers.host + "/api/auth/google/callback";
+      const tr2 = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          code, client_id: process.env.GOOGLE_CLIENT_ID, client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: redirect, grant_type: "authorization_code",
+        }).toString(),
+      });
+      const tok = await tr2.json();
+      if (!tok.access_token) throw new Error("no token");
+      const ui = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", { headers: { Authorization: "Bearer " + tok.access_token } });
+      const info = await ui.json();
+      const email = clean(info.email, 160).toLowerCase();
+      if (!email || info.email_verified === false) throw new Error("no verified email");
+      let u = db.users.find((x) => x.email === email);
+      if (!u) {
+        u = { id: crypto.randomUUID(), email, pass: hashPassword(crypto.randomBytes(24).toString("hex")),
+          name: clean(info.name, 120), phone: "", role: "seller", google: true, createdAt: new Date().toISOString() };
+        db.users.push(u); saveDBNow();
+      }
+      const token = newSession(u.id);
+      res.writeHead(302, { Location: "/#account", "Set-Cookie": sessionCookie(req, token) });
+      return res.end();
+    } catch (e) {
+      console.error("google auth failed:", e.message);
+      res.writeHead(302, { Location: "/?authError=google" });
+      return res.end();
+    }
+  }
+
+  if (p === "/api/me/phone" && req.method === "PATCH") {
+    if (!user) return bad(res, 401, "Not signed in");
+    const b = parseJSONBody(await readBody(req));
+    const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
+    const qat = raw.replace(/^00974/, "").replace(/^974/, "");
+    if (!/^[3567][0-9]{7}$/.test(qat)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
+    user.phone = "+974 " + qat; saveDBNow();
+    return json(res, 200, { ok: true });
+  }
+
+
   if (p === "/api/register" && req.method === "POST") {
     if (!rateLimit(req, "reg", 20, 3600000)) return bad(res, 429, "Too many attempts. Try later.");
     const b = parseJSONBody(await readBody(req));
@@ -212,10 +361,10 @@ async function handle(req, res) {
     if (!/^[3567][0-9]{7}$/.test(qatarPhone)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
     const u = { id: crypto.randomUUID(), email, pass: hashPassword(password),
       name: clean(b.name, 120), phone: "+974 " + qatarPhone,
-      role: b.role === "buyer" ? "buyer" : "seller", createdAt: new Date().toISOString() };
+      role: "member", createdAt: new Date().toISOString() };
     db.users.push(u); saveDBNow();
     const token = newSession(u.id);
-    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role } }, { "Set-Cookie": sessionCookie(req, token) });
+    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role, needsPhone: !u.phone, needsName: !u.name } }, { "Set-Cookie": sessionCookie(req, token) });
   }
 
   if (p === "/api/login" && req.method === "POST") {
@@ -226,7 +375,7 @@ async function handle(req, res) {
     const u = db.users.find((x) => x.email === email);
     if (!u || !checkPassword(String(b.password || ""), u.pass)) return bad(res, 401, "Incorrect email or password.");
     const token = newSession(u.id);
-    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role } }, { "Set-Cookie": sessionCookie(req, token) });
+    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role, needsPhone: !u.phone, needsName: !u.name } }, { "Set-Cookie": sessionCookie(req, token) });
   }
 
   if (p === "/api/logout" && req.method === "POST") {
@@ -238,7 +387,7 @@ async function handle(req, res) {
 
   if (p === "/api/me" && req.method === "GET") {
     if (!user) return bad(res, 401, "Not signed in");
-    return json(res, 200, { user: { email: user.email, name: user.name, role: user.role } });
+    return json(res, 200, { user: { email: user.email, name: user.name, role: user.role, needsPhone: !user.phone, needsName: !user.name } });
   }
 
   if (p === "/api/me/password" && req.method === "PATCH") {
@@ -331,6 +480,9 @@ async function handle(req, res) {
     const cleanAnswers = {};
     for (const [k, v] of Object.entries(answers)) cleanAnswers[clean(k, 160)] = clean(v, 2000);
     const { priv, rest } = splitPrivate(cleanAnswers);
+    priv["Full name"] = user.name || priv["Full name"] || "";
+    priv["Mobile number"] = user.phone || priv["Mobile number"] || "";
+    if (user.email) priv["Email address"] = user.email;
     const id = nextRef(type);
     const dir = path.join(FILES_DIR, id);
     fs.mkdirSync(dir, { recursive: true });
