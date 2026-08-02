@@ -25,7 +25,7 @@ That's it. The site is live at http://localhost:3000
 On first run the server creates the admin account and prints the password to the console:
 
 ```
-Email:    admin@qatarbiz.com
+Email:    admin@qatarbiz.net
 Password: (printed once — save it, then change it in Admin → Settings)
 ```
 
@@ -35,7 +35,7 @@ You can also set your own password before first run:
 ADMIN_PASSWORD='YourStrongPassword' node server.js
 ```
 
-## Publish on qatarbiz.com (recommended: small VPS)
+## Publish on qatarbiz.net (recommended: small VPS)
 
 1. Get a small VPS (DigitalOcean / Hetzner / any Qatari host, ~QAR 25–45/month), Ubuntu 22+.
 2. Install Node and a reverse proxy with HTTPS (Caddy makes this a 2-minute job):
@@ -60,12 +60,12 @@ ADMIN_PASSWORD='YourStrongPassword' node server.js
    ```
 4. Point Caddy at it (automatic free HTTPS):
    ```bash
-   echo 'qatarbiz.com, www.qatarbiz.com {
+   echo 'qatarbiz.net, www.qatarbiz.net {
      reverse_proxy localhost:3000
    }' | sudo tee /etc/caddy/Caddyfile
    sudo systemctl restart caddy
    ```
-5. In your domain registrar, point qatarbiz.com's A record at the server IP. Done.
+5. In your domain registrar, point qatarbiz.net's A record at the server IP. Done.
 
 Alternative: any Node hosting service (Render, Railway) also works — upload the folder,
 set the start command to `node server.js`. Note: on hosts with ephemeral disks, attach a

@@ -7,7 +7,7 @@
 <meta name="description" content="Buy or sell a business in Qatar. Broker-managed sales of commercial registrations and running businesses. بِع أو اشترِ نشاطاً تجارياً في قطر بكل سهولة وخصوصية." />
 <meta property="og:title" content="QatarBiz — Qatar's Business Marketplace" />
 <meta property="og:description" content="Broker-managed sales of commercial registrations and operating businesses in Qatar." />
-<meta property="og:url" content="https://qatarbiz.com" />
+<meta property="og:url" content="https://qatarbiz.net" />
 <meta property="og:type" content="website" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='13' fill='%238A1538'/%3E%3Cpath d='M24 9.5c-7.6 0-13.5 5.9-13.5 13.5S16.4 36.5 24 36.5c2.8 0 5.4-.8 7.6-2.3l3.6 3.6a2 2 0 0 0 2.8-2.8l-3.5-3.5a13.4 13.4 0 0 0 3-8.5C37.5 15.4 31.6 9.5 24 9.5zm0 5a8.5 8.5 0 1 1 0 17 8.5 8.5 0 0 1 0-17z' fill='%23FFFFFF'/%3E%3C/svg%3E" />
 <script>
@@ -710,7 +710,7 @@ Object.assign(AR, {
     "photos uploaded": "صور مرفوعة",
     "Minimum 5 photos required to continue.": "الحد الأدنى 5 صور للمتابعة.",
     "Photos": "الصور",
-    "QatarBiz.com is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).": "موقع QatarBiz.com مملوك ومُدار من قبل رالو للإدارة والتجارة والخدمات، سجل تجاري رقم 78826، مرخّصة من وزارة التجارة والصناعة — دولة قطر، ويعمل بموجب النشاط المسجل: وكيل بالعمولة (رمز النشاط 4610101).",
+    "QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).": "موقع QatarBiz.net مملوك ومُدار من قبل رالو للإدارة والتجارة والخدمات، سجل تجاري رقم 78826، مرخّصة من وزارة التجارة والصناعة — دولة قطر، ويعمل بموجب النشاط المسجل: وكيل بالعمولة (رمز النشاط 4610101).",
     "Contact us": "تواصل معنا",
     "Please enter a valid Qatari mobile number (+974).": "يرجى إدخال رقم جوال قطري صحيح (+974).",
     "Qatari mobile numbers only": "أرقام الجوال القطرية فقط",
@@ -971,6 +971,10 @@ function ListingCard({ l, go }) {
 function Header({ go, page, user, setUser, lang, setLang }) {
     const [open, setOpen] = useState(false);
     const nav = (p, params) => { setOpen(false); go(p, params); };
+    const signOut = async () => { setOpen(false); try {
+        await api.post("/api/logout");
+    }
+    catch (e) { } setUser(null); go("home"); };
     const links = [
         ["browse", "Browse Listings"], ["sell", "Sell"],
     ];
@@ -980,14 +984,16 @@ function Header({ go, page, user, setUser, lang, setLang }) {
                 React.createElement(Logo, null)),
             React.createElement("nav", { className: "nav-links" },
                 links.map(([p, t]) => (React.createElement("button", { key: p, className: page === p ? "active" : "", onClick: () => nav(p) }, tr(t)))),
-                React.createElement("button", { onClick: () => nav("login") }, user ? (user.role === "admin" ? tr("Admin") : tr("Dashboard")) : tr("Login")),
+                React.createElement("button", { onClick: () => nav("login") }, user ? (user.role === "admin" ? tr("Admin") : tr("My Account")) : tr("Login")),
+                user && React.createElement("button", { onClick: signOut }, tr("Sign out")),
                 React.createElement("button", { className: "langbtn", onClick: () => setLang(lang === "en" ? "ar" : "en") }, lang === "en" ? "عربي" : "English"),
                 React.createElement("button", { className: "btn gold sm", style: { marginLeft: 4 }, onClick: () => nav("sell") }, tr("Post a Listing"))),
             React.createElement("button", { className: "langbtn", onClick: () => setLang(lang === "en" ? "ar" : "en") }, lang === "en" ? "عربي" : "English"),
             React.createElement("button", { className: "burger", "aria-label": "Menu", onClick: () => setOpen(!open) }, open ? React.createElement(X, null) : React.createElement(Menu, null))),
         React.createElement("div", { className: "mobile-nav" + (open ? " open" : "") },
             links.map(([p, t]) => React.createElement("button", { key: p, onClick: () => nav(p) }, tr(t))),
-            React.createElement("button", { onClick: () => nav("login") }, user ? tr("Dashboard") : tr("Login")),
+            React.createElement("button", { onClick: () => nav("login") }, user ? tr("My Account") : tr("Login")),
+            user && React.createElement("button", { onClick: signOut }, tr("Sign out")),
             React.createElement("button", { style: { color: "var(--gold)", fontWeight: 700 }, onClick: () => nav("sell") }, tr("Post a Listing")))));
 }
 function Footer({ go }) {
@@ -1016,7 +1022,7 @@ function Footer({ go }) {
                     React.createElement("button", { onClick: () => go("legal", { doc: "disclaimer" }) }, tr("Brokerage Disclaimer")),
                     React.createElement("button", { onClick: () => go("legal", { doc: "nda" }) }, tr("Non-Disclosure Agreement")))),
             React.createElement("div", { style: { borderTop: "1px solid rgba(255,255,255,.12)", marginTop: 40, paddingTop: 22, fontSize: 13, lineHeight: 1.7 } },
-                React.createElement("p", { style: { marginBottom: 10, opacity: .92 } }, tr("QatarBiz.com is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).")),
+                React.createElement("p", { style: { marginBottom: 10, opacity: .92 } }, tr("QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).")),
                 React.createElement("p", { style: { marginBottom: 14, opacity: .92 } },
                     tr("Contact us"),
                     ": ",
@@ -1883,7 +1889,7 @@ function downloadSocialCard(l, template = 0) {
     x.fillText("Ref " + l.id, 540, 940);
     x.font = "600 30px Georgia";
     x.fillStyle = template === 2 ? navy : "#FFFFFF";
-    x.fillText("QatarBiz.com", 540, 998);
+    x.fillText("QatarBiz.net", 540, 998);
     const a = document.createElement("a");
     a.download = l.id + "-social-card.png";
     a.href = c.toDataURL("image/png");
