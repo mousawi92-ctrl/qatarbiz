@@ -386,8 +386,8 @@ async function handle(req, res) {
 
   /* ---------- public listings ---------- */
   if (p === "/api/listings" && req.method === "GET") {
-    const items = db.listings.filter((l) => l.status === "Published")
-      .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""))
+    const items = db.listings.filter((l) => l.status === "Published" || l.status === "Sold")
+      .sort((a, b) => (a.status === b.status ? (b.createdAt || "").localeCompare(a.createdAt || "") : a.status === "Published" ? -1 : 1))
       .map(publicView);
     return json(res, 200, { listings: items });
   }
@@ -395,7 +395,7 @@ async function handle(req, res) {
   const mList = p.match(/^\/api\/listings\/([A-Za-z0-9-]+)$/);
   if (mList && req.method === "GET") {
     const l = db.listings.find((x) => x.id === mList[1]);
-    if (!l || l.status !== "Published") return bad(res, 404, "Listing not found");
+    if (!l || (l.status !== "Published" && l.status !== "Sold")) return bad(res, 404, "Listing not found");
     return json(res, 200, { listing: publicView(l) });
   }
 
@@ -439,7 +439,7 @@ async function handle(req, res) {
   const mPhoto = p.match(/^\/api\/photos\/([A-Za-z0-9-]+)\/(.+)$/);
   if (mPhoto && req.method === "GET") {
     const l = db.listings.find((x) => x.id === mPhoto[1]);
-    if (!l || l.status !== "Published") return bad(res, 404, "Not found");
+    if (!l || (l.status !== "Published" && l.status !== "Sold")) return bad(res, 404, "Not found");
     const stored = decodeURIComponent(mPhoto[2]).replace(/[^A-Za-z0-9._-]/g, "_");
     const isPhoto = (l.files || []).some((f) => f.stored === stored && /^Business photo/i.test(f.label));
     if (!isPhoto) return bad(res, 404, "Not found");
@@ -570,6 +570,16 @@ async function handle(req, res) {
     }
 
     const mAdm = p.match(/^\/api\/admin\/listings\/([A-Za-z0-9-]+)$/);
+    if (mAdm && req.method === "DELETE") {
+      const idx = db.listings.findIndex((x) => x.id === mAdm[1]);
+      if (idx === -1) return bad(res, 404, "Listing not found");
+      const dir = path.join(FILES_DIR, mAdm[1]);
+      try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {}
+      db.listings.splice(idx, 1);
+      db.inquiries = db.inquiries.filter((q) => q.listingId !== mAdm[1]);
+      saveDBNow();
+      return json(res, 200, { ok: true });
+    }
     if (mAdm && req.method === "PATCH") {
       const l = db.listings.find((x) => x.id === mAdm[1]);
       if (!l) return bad(res, 404, "Listing not found");
