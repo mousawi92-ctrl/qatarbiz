@@ -204,6 +204,7 @@ async function handle(req, res) {
 
   /* ---------- OTP sign-in (SMS / WhatsApp via Twilio Verify; dev mode without it) ---------- */
   if (p === "/api/otp/send" && req.method === "POST") {
+    if (!user) return bad(res, 401, "Please sign in first.");
     if (!rateLimit(req, "otp", 8, 900000)) return bad(res, 429, "Too many attempts. Try again in 15 minutes.");
     const b = parseJSONBody(await readBody(req));
     const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
@@ -231,6 +232,7 @@ async function handle(req, res) {
   }
 
   if (p === "/api/otp/check" && req.method === "POST") {
+    if (!user) return bad(res, 401, "Please sign in first.");
     if (!rateLimit(req, "otpc", 15, 900000)) return bad(res, 429, "Too many attempts. Try again in 15 minutes.");
     const b = parseJSONBody(await readBody(req));
     const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
@@ -259,14 +261,10 @@ async function handle(req, res) {
     }
     if (!approved) return bad(res, 401, "Invalid or expired code.");
     const phoneFmt = "+974 " + qat;
-    let u = db.users.find((x) => x.phone === phoneFmt);
-    if (!u) {
-      u = { id: crypto.randomUUID(), email: "", pass: hashPassword(crypto.randomBytes(24).toString("hex")),
-        name: clean(b && b.name, 120), phone: phoneFmt, role: "member", createdAt: new Date().toISOString() };
-      db.users.push(u); saveDBNow();
-    } else if (b && b.name && !u.name) { u.name = clean(b.name, 120); saveDBNow(); }
-    const token = newSession(u.id);
-    return json(res, 200, { user: { email: u.email, name: u.name, role: u.role, phone: u.phone, needsPhone: false, needsName: !u.name } }, { "Set-Cookie": sessionCookie(req, token) });
+    const taken = db.users.find((x) => x.phone === phoneFmt && x.id !== user.id);
+    if (taken) return bad(res, 409, "This number is already linked to another account.");
+    user.phone = phoneFmt; saveDBNow();
+    return json(res, 200, { ok: true, user: { email: user.email, name: user.name, role: user.role, phone: user.phone, needsPhone: false, needsName: !user.name } });
   }
 
   if (p === "/api/me/name" && req.method === "PATCH") {
@@ -323,7 +321,7 @@ async function handle(req, res) {
       let u = db.users.find((x) => x.email === email);
       if (!u) {
         u = { id: crypto.randomUUID(), email, pass: hashPassword(crypto.randomBytes(24).toString("hex")),
-          name: clean(info.name, 120), phone: "", role: "seller", google: true, createdAt: new Date().toISOString() };
+          name: clean(info.name, 120), phone: "", role: "member", google: true, createdAt: new Date().toISOString() };
         db.users.push(u); saveDBNow();
       }
       const token = newSession(u.id);
@@ -336,16 +334,6 @@ async function handle(req, res) {
     }
   }
 
-  if (p === "/api/me/phone" && req.method === "PATCH") {
-    if (!user) return bad(res, 401, "Not signed in");
-    const b = parseJSONBody(await readBody(req));
-    const raw = clean(b && b.phone, 40).replace(/[^0-9]/g, "");
-    const qat = raw.replace(/^00974/, "").replace(/^974/, "");
-    if (!/^[3567][0-9]{7}$/.test(qat)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
-    user.phone = "+974 " + qat; saveDBNow();
-    return json(res, 200, { ok: true });
-  }
-
 
   if (p === "/api/register" && req.method === "POST") {
     if (!rateLimit(req, "reg", 20, 3600000)) return bad(res, 429, "Too many attempts. Try later.");
@@ -356,11 +344,8 @@ async function handle(req, res) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return bad(res, 400, "Please enter a valid email address.");
     if (password.length < 8) return bad(res, 400, "Password must be at least 8 characters.");
     if (db.users.find((u) => u.email === email)) return bad(res, 409, "An account with this email already exists.");
-    const rawPhone = clean(b.phone, 40).replace(/[^0-9]/g, "");
-    const qatarPhone = rawPhone.replace(/^00974/, "").replace(/^974/, "");
-    if (!/^[3567][0-9]{7}$/.test(qatarPhone)) return bad(res, 400, "Please enter a valid Qatari mobile number (+974).");
     const u = { id: crypto.randomUUID(), email, pass: hashPassword(password),
-      name: clean(b.name, 120), phone: "+974 " + qatarPhone,
+      name: clean(b.name, 120), phone: "",
       role: "member", createdAt: new Date().toISOString() };
     db.users.push(u); saveDBNow();
     const token = newSession(u.id);

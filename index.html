@@ -640,6 +640,13 @@ let WIZ_FILES = {};
 const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefined ? a[tr(en)] : a[en]; return String(v || "").trim().length > 0; };
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Verify your mobile number": "تحقق من رقم جوالك",
+    "One-time verification of your Qatari number. After this, you sign in freely with your email or Google.": "تحقق لمرة واحدة من رقمك القطري. بعدها تسجّل الدخول مجاناً ببريدك أو حساب جوجل.",
+    "This number is already linked to another account.": "هذا الرقم مرتبط بحساب آخر بالفعل.",
+    "Change mobile number": "تغيير رقم الجوال",
+    "Your mobile number": "رقم جوالك",
+    "Verified": "موثّق",
+    "or continue with": "أو تابع باستخدام",
     "Qatar's Business Marketplace": "سوق قطر للأعمال",
     "Buy or Sell a Business in Qatar": "بِع أو اشترِ نشاطاً تجارياً في قطر",
     "Commercial registrations and running businesses. We manage the deal from listing to signature, for a success-based commission.": "سجلات تجارية وأنشطة قائمة. ندير الصفقة من الإعلان حتى التوقيع، بعمولة عند النجاح فقط.",
@@ -1720,7 +1727,7 @@ function SellCR({ user, go, setUser }) {
     if (!user)
         return React.createElement(AuthGate, { go: go });
     if (user.needsPhone)
-        return React.createElement(PhoneGate, { user: user, setUser: setUser });
+        return React.createElement(PhoneVerify, { user: user, setUser: setUser });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
     const steps = ["Upload Commercial Registration", "Commercial Permit and Establishment Card", "Asking Price", "Review and Submit"];
@@ -1760,7 +1767,7 @@ function SellBZ({ user, go, setUser }) {
     if (!user)
         return React.createElement(AuthGate, { go: go });
     if (user.needsPhone)
-        return React.createElement(PhoneGate, { user: user, setUser: setUser });
+        return React.createElement(PhoneVerify, { user: user, setUser: setUser });
     const [ex, setEx] = useState(null);
     const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
     const steps = ["Upload Commercial Registration", "Business Photos", "Business Status", "Staff and Rent", "Asking Price", "Review and Submit"];
@@ -1897,16 +1904,91 @@ function downloadSocialCard(l, template = 0) {
 }
 /* ================= LOGIN ================= */
 function Login({ go, setUser }) {
-    const [mode, setMode] = useState("otp"); // otp | email
-    const [step, setStep] = useState(1); // 1 phone, 2 code, 3 name
+    const [mode, setMode] = useState("in"); // in | up
+    const [f, setF] = useState({ name: "", email: "", pass: "" });
+    const set = (k, v) => setF((s) => (Object.assign(Object.assign({}, s), { [k]: v })));
+    const [busy, setBusy] = useState(false);
+    const [err, setErr] = useState("");
+    const [hasGoogle, setHasGoogle] = useState(false);
+    useEffect(() => { api.get("/api/config").then((d) => setHasGoogle(!!d.google)).catch(() => { }); }, []);
+    const go2 = async () => {
+        setBusy(true);
+        setErr("");
+        try {
+            const d = mode === "in"
+                ? await api.post("/api/login", { email: f.email, password: f.pass })
+                : await api.post("/api/register", { email: f.email, password: f.pass, name: f.name });
+            setUser(d.user);
+        }
+        catch (e) {
+            setErr(tr(e.message));
+        }
+        setBusy(false);
+    };
+    return (React.createElement("section", { className: "section", style: { paddingTop: 60, minHeight: "60vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 420 } },
+            React.createElement("div", { style: { textAlign: "center", marginBottom: 22 } },
+                React.createElement("span", { style: { display: "inline-block" } },
+                    React.createElement(Logo, null))),
+            React.createElement("div", { className: "card", style: { padding: 28 } },
+                React.createElement("div", { className: "seg", style: { marginBottom: 18 } },
+                    React.createElement("button", { className: mode === "in" ? "on" : "", onClick: () => { setMode("in"); setErr(""); } }, tr("Sign in")),
+                    React.createElement("button", { className: mode === "up" ? "on" : "", onClick: () => { setMode("up"); setErr(""); } }, tr("Create account"))),
+                mode === "up" && React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Full name")),
+                    React.createElement("input", { className: "input", value: f.name, onChange: (e) => set("name", e.target.value) })),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Email address")),
+                    React.createElement("input", { className: "input", type: "email", placeholder: "you@email.com", value: f.email, onChange: (e) => set("email", e.target.value) })),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Password")),
+                    React.createElement("input", { className: "input", type: "password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", value: f.pass, onChange: (e) => set("pass", e.target.value), onKeyDown: (e) => e.key === "Enter" && go2() })),
+                err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+                React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !f.email || !f.pass || (mode === "up" && f.name.trim().length < 2), onClick: go2 }, busy ? tr("Signing in…") : mode === "in" ? tr("Sign in") : tr("Create account")),
+                hasGoogle && (React.createElement(React.Fragment, null,
+                    React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 12, margin: "16px 0", color: "var(--muted)", fontSize: 13 } },
+                        React.createElement("span", { style: { flex: 1, height: 1, background: "var(--border)" } }),
+                        " ",
+                        tr("or continue with"),
+                        " ",
+                        React.createElement("span", { style: { flex: 1, height: 1, background: "var(--border)" } })),
+                    React.createElement("a", { href: "/api/auth/google", style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "12px 16px", borderRadius: 12, border: "1.5px solid var(--border)", background: "#fff", textDecoration: "none", color: "var(--ink)", fontWeight: 600, fontSize: 15 } },
+                        React.createElement("svg", { width: "19", height: "19", viewBox: "0 0 48 48" },
+                            React.createElement("path", { fill: "#FFC107", d: "M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z" }),
+                            React.createElement("path", { fill: "#FF3D00", d: "M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" }),
+                            React.createElement("path", { fill: "#4CAF50", d: "M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" }),
+                            React.createElement("path", { fill: "#1976D2", d: "M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C40.9 35.5 44 30.2 44 24c0-1.3-.1-2.6-.4-3.9z" })),
+                        tr("Continue with Google"))))))));
+}
+function NameGate({ user, setUser }) {
+    const [name, setName] = useState("");
+    const [busy, setBusy] = useState(false);
+    const save = async () => {
+        setBusy(true);
+        try {
+            await api.patch("/api/me/name", { name });
+            setUser(Object.assign(Object.assign({}, user), { name, needsName: false }));
+        }
+        catch (e) { }
+        setBusy(false);
+    };
+    return (React.createElement("section", { className: "section grey", style: { paddingTop: 60, minHeight: "60vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 420 } },
+            React.createElement("div", { className: "card", style: { padding: 30 } },
+                React.createElement("h2", { className: "h3", style: { marginBottom: 14 } }, tr("What is your full name?")),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Full name")),
+                    React.createElement("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), onKeyDown: (e) => e.key === "Enter" && save() })),
+                React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || name.trim().length < 2, onClick: save }, tr("Continue"))))));
+}
+function PhoneVerify({ user, setUser, inline, onDone }) {
+    const [step, setStep] = useState(1);
     const [phone, setPhone] = useState("");
     const [code, setCode] = useState("");
-    const [name, setName] = useState("");
     const [sentTo, setSentTo] = useState("");
     const [devCode, setDevCode] = useState("");
     const [busy, setBusy] = useState(false);
     const [err, setErr] = useState("");
-    const [f, setF] = useState({ email: "", pass: "" });
     const send = async (channel) => {
         setBusy(true);
         setErr("");
@@ -1925,127 +2007,45 @@ function Login({ go, setUser }) {
         setBusy(true);
         setErr("");
         try {
-            const d = await api.post("/api/otp/check", { phone, code, name });
-            if (d.user.needsName) {
-                setStep(3);
-            }
-            else {
-                setUser(d.user);
-            }
-        }
-        catch (e) {
-            setErr(tr(e.message));
-        }
-        setBusy(false);
-    };
-    const saveName = async () => {
-        setBusy(true);
-        setErr("");
-        try {
-            await api.patch("/api/me/name", { name });
-            const d = await api.get("/api/me");
+            const d = await api.post("/api/otp/check", { phone, code });
             setUser(d.user);
+            onDone && onDone();
         }
         catch (e) {
             setErr(tr(e.message));
         }
         setBusy(false);
     };
-    const emailGo = async () => {
-        setBusy(true);
-        setErr("");
-        try {
-            const d = await api.post("/api/login", { email: f.email, password: f.pass });
-            setUser(d.user);
-        }
-        catch (e) {
-            setErr(tr(e.message));
-        }
-        setBusy(false);
-    };
-    return (React.createElement("section", { className: "section", style: { paddingTop: 60, minHeight: "60vh" } },
-        React.createElement("div", { className: "wrap", style: { maxWidth: 420 } },
-            React.createElement("div", { style: { textAlign: "center", marginBottom: 22 } },
-                React.createElement("div", { style: { display: "inline-block" } },
-                    React.createElement(Logo, null))),
-            React.createElement("div", { className: "card", style: { padding: 28 } },
-                mode === "otp" && step === 1 && (React.createElement(React.Fragment, null,
-                    React.createElement("h1", { className: "h3", style: { marginBottom: 6 } }, tr("Sign in with your mobile")),
-                    React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 18, lineHeight: 1.6 } }, tr("We will send you a 6-digit code.")),
-                    React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Mobile number")),
-                        React.createElement("input", { className: "input", type: "tel", placeholder: "+974 3XXX XXXX", value: phone, onChange: (e) => setPhone(e.target.value), style: { fontSize: 17, letterSpacing: ".03em" } }),
-                        React.createElement("div", { className: "muted", style: { fontSize: 12, marginTop: 4 } }, tr("Qatari mobile numbers only"))),
-                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
-                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 10 }, disabled: busy || !phone, onClick: () => send("sms") }, tr("Send code by SMS")),
-                    React.createElement("button", { className: "btn", style: { width: "100%", justifyContent: "center", background: "#25D366", color: "#fff" }, disabled: busy || !phone, onClick: () => send("whatsapp") },
-                        React.createElement("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "currentColor" },
-                            React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" })),
-                        tr("Send code by WhatsApp")))),
-                mode === "otp" && step === 2 && (React.createElement(React.Fragment, null,
-                    React.createElement("h1", { className: "h3", style: { marginBottom: 6 } }, tr("Enter the 6-digit code")),
-                    React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 6 } },
-                        tr("Code sent to"),
-                        " ",
-                        React.createElement("strong", null, sentTo)),
-                    devCode && React.createElement("div", { className: "notice", style: { marginBottom: 12, fontSize: 14 } },
-                        tr("Test mode — your code is:"),
-                        " ",
-                        React.createElement("strong", { style: { fontSize: 17, letterSpacing: ".2em" } }, devCode)),
-                    React.createElement("div", { className: "field" },
-                        React.createElement("input", { className: "input", type: "tel", inputMode: "numeric", maxLength: 6, placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022", value: code, onChange: (e) => setCode(e.target.value.replace(/[^0-9]/g, "")), onKeyDown: (e) => e.key === "Enter" && code.length === 6 && verify(), style: { fontSize: 26, letterSpacing: ".45em", textAlign: "center" } })),
-                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
-                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 12 }, disabled: busy || code.length !== 6, onClick: verify }, tr("Verify and sign in")),
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 13.5 } },
-                        React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => { setStep(1); setCode(""); setErr(""); } }, tr("Change number")),
-                        React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => send("sms") }, tr("Resend code"))))),
-                mode === "otp" && step === 3 && (React.createElement(React.Fragment, null,
-                    React.createElement("h1", { className: "h3", style: { marginBottom: 14 } }, tr("What is your full name?")),
-                    React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Full name")),
-                        React.createElement("input", { className: "input", value: name, onChange: (e) => setName(e.target.value), onKeyDown: (e) => e.key === "Enter" && saveName() })),
-                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
-                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || name.trim().length < 2, onClick: saveName }, tr("Continue")))),
-                mode === "email" && (React.createElement(React.Fragment, null,
-                    React.createElement("h1", { className: "h3", style: { marginBottom: 14 } }, tr("Sign in")),
-                    React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Email address")),
-                        React.createElement("input", { className: "input", type: "email", placeholder: "you@email.com", value: f.email, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { email: e.target.value }))) })),
-                    React.createElement("div", { className: "field" },
-                        React.createElement("label", null, tr("Password")),
-                        React.createElement("input", { className: "input", type: "password", placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022", value: f.pass, onChange: (e) => setF((s) => (Object.assign(Object.assign({}, s), { pass: e.target.value }))), onKeyDown: (e) => e.key === "Enter" && emailGo() })),
-                    err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
-                    React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !f.email || !f.pass, onClick: emailGo }, tr("Sign in"))))),
-            React.createElement("p", { style: { textAlign: "center", marginTop: 16 } },
-                React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none" }, onClick: () => { setMode(mode === "otp" ? "email" : "otp"); setErr(""); } }, mode === "otp" ? tr("Admin or email sign-in") : tr("Back to mobile sign-in"))))));
-}
-function PhoneGate({ user, setUser }) {
-    const [phone, setPhone] = useState("");
-    const [busy, setBusy] = useState(false);
-    const [err, setErr] = useState("");
-    const save = async () => {
-        setBusy(true);
-        setErr("");
-        try {
-            await api.patch("/api/me/phone", { phone });
-            setUser(Object.assign(Object.assign({}, user), { needsPhone: false }));
-        }
-        catch (e) {
-            setErr(tr(e.message));
-        }
-        setBusy(false);
-    };
+    const body = (React.createElement("div", { className: "card", style: { padding: 28 } }, step === 1 ? (React.createElement(React.Fragment, null,
+        React.createElement("h2", { className: "h3", style: { marginBottom: 6 } }, tr("Verify your mobile number")),
+        React.createElement("p", { className: "muted", style: { fontSize: 13.5, lineHeight: 1.7, marginBottom: 16 } }, tr("One-time verification of your Qatari number. After this, you sign in freely with your email or Google.")),
+        React.createElement("div", { className: "field" },
+            React.createElement("label", null, tr("Mobile number")),
+            React.createElement("input", { className: "input", type: "tel", placeholder: "+974 3XXX XXXX", value: phone, onChange: (e) => setPhone(e.target.value), style: { fontSize: 17 } }),
+            React.createElement("div", { className: "muted", style: { fontSize: 12, marginTop: 4 } }, tr("Qatari mobile numbers only"))),
+        err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+        React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 10 }, disabled: busy || !phone, onClick: () => send("sms") }, tr("Send code by SMS")),
+        React.createElement("button", { className: "btn", style: { width: "100%", justifyContent: "center", background: "#25D366", color: "#fff" }, disabled: busy || !phone, onClick: () => send("whatsapp") }, tr("Send code by WhatsApp")))) : (React.createElement(React.Fragment, null,
+        React.createElement("h2", { className: "h3", style: { marginBottom: 6 } }, tr("Enter the 6-digit code")),
+        React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 6 } },
+            tr("Code sent to"),
+            " ",
+            React.createElement("strong", null, sentTo)),
+        devCode && React.createElement("div", { className: "notice", style: { marginBottom: 12, fontSize: 14 } },
+            tr("Test mode — your code is:"),
+            " ",
+            React.createElement("strong", { style: { fontSize: 17, letterSpacing: ".2em" } }, devCode)),
+        React.createElement("div", { className: "field" },
+            React.createElement("input", { className: "input", type: "tel", inputMode: "numeric", maxLength: 6, placeholder: "\u2022\u2022\u2022\u2022\u2022\u2022", value: code, onChange: (e) => setCode(e.target.value.replace(/[^0-9]/g, "")), onKeyDown: (e) => e.key === "Enter" && code.length === 6 && verify(), style: { fontSize: 26, letterSpacing: ".45em", textAlign: "center" } })),
+        err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 12 } }, err),
+        React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center", marginBottom: 12 }, disabled: busy || code.length !== 6, onClick: verify }, tr("Verify and sign in")),
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: 13.5 } },
+            React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => { setStep(1); setCode(""); setErr(""); } }, tr("Change number")),
+            React.createElement("button", { className: "btn light sm", style: { border: "none", background: "none", padding: 4 }, onClick: () => send("sms") }, tr("Resend code")))))));
+    if (inline)
+        return body;
     return (React.createElement("section", { className: "section grey", style: { paddingTop: 60, minHeight: "60vh" } },
-        React.createElement("div", { className: "wrap", style: { maxWidth: 440 } },
-            React.createElement("div", { className: "card", style: { padding: 30 } },
-                React.createElement("h2", { className: "h3", style: { marginBottom: 8 } }, tr("One last step")),
-                React.createElement("p", { className: "muted", style: { lineHeight: 1.7, marginBottom: 18 } }, tr("Please add your Qatari mobile number so our broker can contact you.")),
-                React.createElement("div", { className: "field" },
-                    React.createElement("label", null, tr("Mobile number")),
-                    React.createElement("input", { className: "input", placeholder: "+974 3XXX XXXX", value: phone, onChange: (e) => setPhone(e.target.value), onKeyDown: (e) => e.key === "Enter" && save() }),
-                    React.createElement("div", { className: "muted", style: { fontSize: 12, marginTop: 4 } }, tr("Qatari mobile numbers only"))),
-                err && React.createElement("p", { style: { color: "var(--danger)", fontSize: 13.5, marginBottom: 10 } }, err),
-                React.createElement("button", { className: "btn primary", style: { width: "100%", justifyContent: "center" }, disabled: busy || !phone, onClick: save }, busy ? tr("Saving…") : tr("Save and continue"))))));
+        React.createElement("div", { className: "wrap", style: { maxWidth: 440 } }, body)));
 }
 function DashShell({ title, user, setUser, children }) {
     const logout = async () => { try {
@@ -2109,6 +2109,7 @@ function SellerListingRow({ l, onSent }) {
         done && React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 10 } }, tr("Request sent. Our broker will review and apply the changes."))));
 }
 function AccountDash({ go, user, setUser }) {
+    const [changePhone, setChangePhone] = useState(false);
     const [ls, setLs] = useState(null);
     const [qs, setQs] = useState(null);
     const load = () => {
@@ -2117,9 +2118,19 @@ function AccountDash({ go, user, setUser }) {
     };
     useEffect(() => { load(); }, []);
     return (React.createElement(DashShell, { title: "My Account", user: user, setUser: setUser },
-        React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 24 } },
+        React.createElement("div", { style: { display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 } },
             React.createElement("button", { className: "btn primary sm", onClick: () => go("sell") }, tr("Post a new listing")),
             React.createElement("button", { className: "btn light sm", onClick: () => go("browse") }, tr("Browse Listings"))),
+        React.createElement("div", { className: "card", style: { padding: 16, marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 } },
+            React.createElement("div", null,
+                React.createElement("div", { className: "muted", style: { fontSize: 12.5, textTransform: "uppercase", letterSpacing: ".06em" } }, tr("Your mobile number")),
+                React.createElement("div", { style: { fontWeight: 600, marginTop: 4 } }, user && user.phone ? React.createElement(React.Fragment, null,
+                    user.phone,
+                    " ",
+                    React.createElement("span", { className: "badge teal", style: { marginInlineStart: 8 } }, tr("Verified"))) : "—")),
+            React.createElement("button", { className: "btn light sm", onClick: () => setChangePhone(!changePhone) }, tr("Change mobile number"))),
+        changePhone && React.createElement("div", { style: { marginBottom: 24 } },
+            React.createElement(PhoneVerify, { user: user, setUser: setUser, inline: true, onDone: () => setChangePhone(false) })),
         React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 12 } }, tr("My Listings")),
         ls === null ? React.createElement("p", { className: "muted" }, tr("Loading…")) : ls.length === 0 ? (React.createElement("p", { className: "muted", style: { marginBottom: 8 } }, tr("No listings yet."))) : (React.createElement("div", { style: { display: "grid", gap: 14 } }, ls.map((l) => React.createElement(SellerListingRow, { key: l.id, l: l, onSent: load })))),
         React.createElement("h3", { className: "h3", style: { fontSize: 17, margin: "28px 0 12px" } }, tr("My Inquiries")),
@@ -2608,7 +2619,7 @@ function App() {
         page === "privacy-page" && React.createElement(PrivacyPage, null),
         page === "about" && React.createElement(About, { go: go }),
         page === "contact" && React.createElement(Contact, null),
-        page === "login" && (user ? (user.needsPhone ? React.createElement(PhoneGate, { user: user, setUser: setUser }) : user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : React.createElement(AccountDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),
+        page === "login" && (user ? (user.needsName ? React.createElement(NameGate, { user: user, setUser: setUser }) : user.needsPhone ? React.createElement(PhoneVerify, { user: user, setUser: setUser }) : user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : React.createElement(AccountDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),
         page === "legal" && React.createElement(Legal, { params: params }),
         React.createElement(Footer, { go: go })));
 }
