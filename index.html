@@ -640,6 +640,26 @@ let WIZ_FILES = {};
 const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefined ? a[tr(en)] : a[en]; return String(v || "").trim().length > 0; };
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Company Information": "معلومات الشركة",
+    "Legal Entity and Ownership": "الكيان القانوني والملكية",
+    "QatarBiz.net is an online business marketplace owned and operated by:": "‏QatarBiz.net هو سوق أعمال إلكتروني مملوك ومُدار من قبل:",
+    "Legal name": "الاسم القانوني",
+    "Commercial Registration (CR) No.": "رقم السجل التجاري",
+    "Commercial License No.": "رقم الرخصة التجارية",
+    "Licensed by": "مرخّصة من",
+    "Ministry of Commerce and Industry — State of Qatar": "وزارة التجارة والصناعة — دولة قطر",
+    "Registered activity for this platform": "النشاط المسجل لهذه المنصة",
+    "Agent with Commission (Activity Code 4610101)": "وكيل بالعمولة (رمز النشاط 4610101)",
+    "Operational Address": "العنوان التشغيلي",
+    "Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar": "مبنى 42، شارع 850، منطقة 60، وحدة 60، الدوحة، دولة قطر",
+    "Authorized Representatives": "الممثلون المفوضون",
+    "Mohammed Hassan Sayedkamal Al-Mousawi — Manager (Full and Absolute Authority)": "محمد حسن سيدكمال الموسوي — مدير (صلاحيات كاملة ومطلقة)",
+    "Faisal Abdulaziz Mohammed Abdulla Al-Naimi — Responsible Manager": "فيصل عبدالعزيز محمد عبدالله النعيمي — المدير المسؤول",
+    "Contact": "التواصل",
+    "Verification": "التحقق",
+    "The Commercial Registration and Commercial License of Rallou Management Trading and Services are electronically certified documents issued by the Ministry of Commerce and Industry of the State of Qatar and can be verified through the Ministry's official channels (www.moci.gov.qa).": "السجل التجاري والرخصة التجارية لشركة رالو للإدارة والتجارة والخدمات وثائق إلكترونية معتمدة صادرة عن وزارة التجارة والصناعة بدولة قطر ويمكن التحقق منها عبر القنوات الرسمية للوزارة (www.moci.gov.qa).",
+    "QatarBiz is the trade platform name under which Rallou Management Trading and Services operates its brokerage activity.": "‏QatarBiz هو الاسم التجاري للمنصة التي تمارس من خلالها شركة رالو للإدارة والتجارة والخدمات نشاط الوساطة الخاص بها.",
+    "views": "مشاهدة",
     "SOLD": "تم البيع",
     "This business has been sold through QatarBiz.": "تم بيع هذا النشاط عبر QatarBiz.",
     "Sold through QatarBiz": "بيع عبر QatarBiz",
@@ -720,7 +740,7 @@ Object.assign(AR, {
     "photos uploaded": "صور مرفوعة",
     "Minimum 5 photos required to continue.": "الحد الأدنى 5 صور للمتابعة.",
     "Photos": "الصور",
-    "QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).": "موقع QatarBiz.net مملوك ومُدار من قبل رالو للإدارة والتجارة والخدمات، سجل تجاري رقم 78826، مرخّصة من وزارة التجارة والصناعة — دولة قطر، ويعمل بموجب النشاط المسجل: وكيل بالعمولة (رمز النشاط 4610101).",
+    "QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, Commercial License No. 336310, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101). Operational address: Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar.": "موقع QatarBiz.net مملوك ومُدار من قبل رالو للإدارة والتجارة والخدمات، سجل تجاري رقم 78826، رخصة تجارية رقم 336310، مرخّصة من وزارة التجارة والصناعة — دولة قطر، ويعمل بموجب النشاط المسجل: وكيل بالعمولة (رمز النشاط 4610101). العنوان التشغيلي: مبنى 42، شارع 850، منطقة 60، وحدة 60، الدوحة، دولة قطر.",
     "Contact us": "تواصل معنا",
     "Please enter a valid Qatari mobile number (+974).": "يرجى إدخال رقم جوال قطري صحيح (+974).",
     "Qatari mobile numbers only": "أرقام الجوال القطرية فقط",
@@ -972,7 +992,12 @@ function ListingCard({ l, go }) {
             React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr(l.category || "Running Business")),
             sold ? React.createElement("span", { className: "badge gold" }, tr("Sold through QatarBiz")) : React.createElement("span", { className: "ref" }, l.id)),
         React.createElement("h3", { className: "h3", style: { fontSize: 17.5, marginBottom: 6 } }, tr(l.title)),
-        React.createElement("div", { className: "muted", style: { fontSize: 13.5, marginBottom: 12 } }, l.established ? `${tr("Established")} ${l.established} · ${AGE(l.established)} ${tr("years")}` : ""),
+        React.createElement("div", { className: "muted", style: { fontSize: 13.5, marginBottom: 12, display: "flex", justifyContent: "space-between", gap: 8 } },
+            React.createElement("span", null, l.established ? `${tr("Established")} ${l.established} · ${AGE(l.established)} ${tr("years")}` : ""),
+            React.createElement("span", { style: { whiteSpace: "nowrap" } },
+                React.createElement(Eye, { size: 13, style: { verticalAlign: "-2px" } }),
+                " ",
+                (l.views || 0).toLocaleString())),
         React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 6 } },
             React.createElement("div", null,
                 React.createElement("div", { style: { fontSize: 11.5, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".07em" } }, tr("Asking price")),
@@ -1032,12 +1057,13 @@ function Footer({ go }) {
                     React.createElement("button", { onClick: () => go("login") }, tr("Seller Dashboard"))),
                 React.createElement("div", null,
                     React.createElement("h4", null, tr("Legal")),
+                    React.createElement("button", { onClick: () => go("company-info") }, tr("Company Information")),
                     React.createElement("button", { onClick: () => go("legal", { doc: "terms" }) }, tr("Terms and Conditions")),
                     React.createElement("button", { onClick: () => go("legal", { doc: "privacy" }) }, tr("Privacy Policy")),
                     React.createElement("button", { onClick: () => go("legal", { doc: "disclaimer" }) }, tr("Brokerage Disclaimer")),
                     React.createElement("button", { onClick: () => go("legal", { doc: "nda" }) }, tr("Non-Disclosure Agreement")))),
             React.createElement("div", { style: { borderTop: "1px solid rgba(255,255,255,.12)", marginTop: 40, paddingTop: 22, fontSize: 13, lineHeight: 1.7 } },
-                React.createElement("p", { style: { marginBottom: 10, opacity: .92 } }, tr("QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101).")),
+                React.createElement("p", { style: { marginBottom: 10, opacity: .92 } }, tr("QatarBiz.net is owned and operated by Rallou Management Trading and Services, Commercial Registration No. 78826, Commercial License No. 336310, licensed by the Ministry of Commerce and Industry — State of Qatar, operating under the registered activity: Agent with Commission (Activity Code 4610101). Operational address: Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar.")),
                 React.createElement("p", { style: { marginBottom: 14, opacity: .92 } },
                     tr("Contact us"),
                     ": ",
@@ -1416,8 +1442,15 @@ function ListingDetail({ params, go }) {
                     React.createElement("div", { style: { fontSize: 11.5, color: "var(--muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: ".08em" } }, tr("Asking price")),
                     React.createElement("div", { className: "price", style: { fontSize: 30, margin: "4px 0 2px" } }, fmtQAR(l.price)),
                     React.createElement("div", { className: "muted", style: { fontSize: 13, marginBottom: 18 } },
-                        l.negotiable ? "Price negotiable" : "Fixed price",
-                        " \u00B7 Broker managed"),
+                        l.negotiable ? tr("Price negotiable") : tr("Fixed price"),
+                        " \u00B7 ",
+                        tr("Broker Managed"),
+                        " \u00B7 ",
+                        React.createElement(Eye, { size: 13, style: { verticalAlign: "-2px" } }),
+                        " ",
+                        (l.views || 0).toLocaleString(),
+                        " ",
+                        tr("views")),
                     l.status === "Sold" ? (React.createElement("div", { style: { background: "var(--gold-soft)", border: "1.5px solid var(--gold)", borderRadius: 14, padding: 18, textAlign: "center" } },
                         React.createElement("div", { style: { fontWeight: 800, fontSize: 20, letterSpacing: ".1em", color: "var(--navy)", marginBottom: 6 } }, tr("SOLD")),
                         React.createElement("p", { className: "muted", style: { fontSize: 13.5, lineHeight: 1.6 } }, tr("This business has been sold through QatarBiz.")))) : ([
@@ -2232,7 +2265,7 @@ function AdminPanel({ go, user, setUser }) {
             React.createElement("div", { className: "grid4", style: { gap: 14, marginBottom: 22 } }, [["Total listings", stats.total], ["Published", stats.published], ["Pending review", stats.pending], ["New inquiries", stats.newInquiries]].map(([k, v]) => (React.createElement("div", { key: k, className: "card", style: { padding: 18 } },
                 React.createElement("div", { className: "muted", style: { fontSize: 12.5, textTransform: "uppercase", letterSpacing: ".06em" } }, k),
                 React.createElement("div", { className: "disp", style: { fontSize: 30, marginTop: 6 } }, v))))),
-            React.createElement("div", { className: "seg", style: { marginBottom: 18, maxWidth: 560 } }, [["listings", "Listings"], ["inquiries", "Inquiries"], ["create", "Create Listing"], ["settings", "Settings"]].map(([k, t2]) => (React.createElement("button", { key: k, className: tab === k ? "on" : "", onClick: () => setTab(k) }, t2)))),
+            React.createElement("div", { className: "seg", style: { marginBottom: 18, maxWidth: 560 } }, [["listings", "Listings"], ["inquiries", "Inquiries"], ["users", "Users"], ["create", "Create Listing"], ["settings", "Settings"]].map(([k, t2]) => (React.createElement("button", { key: k, className: tab === k ? "on" : "", onClick: () => setTab(k) }, t2)))),
             tab === "listings" && (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "seg", style: { marginBottom: 14, maxWidth: 420 } },
                     React.createElement("button", { className: admType === "cr" ? "on" : "", onClick: () => setAdmType("cr") }, "Commercial Registrations"),
@@ -2262,7 +2295,11 @@ function AdminPanel({ go, user, setUser }) {
                                             React.createElement("div", { style: { fontWeight: 600 } }, (l.private && l.private["Full name"]) || "—"),
                                             React.createElement("div", { className: "muted", style: { fontSize: 12.5 } }, (l.private && l.private["Mobile number"]) || ""),
                                             React.createElement("div", { className: "muted", style: { fontSize: 12.5 } }, (l.private && (l.private["Legal business name (extracted)"] || l.private["Legal business name"])) || "")),
-                                        React.createElement("td", { style: td }, l.price ? "QAR " + Number(l.price).toLocaleString() : "—"),
+                                        React.createElement("td", { style: td },
+                                            l.price ? "QAR " + Number(l.price).toLocaleString() : "—",
+                                            React.createElement("div", { className: "muted", style: { fontSize: 12 } },
+                                                (l.views || 0).toLocaleString(),
+                                                " views")),
                                         React.createElement("td", { style: td },
                                             React.createElement("select", { className: "input", style: { padding: "6px 8px", fontSize: 13 }, value: l.status, onChange: (e) => setStatus(l.id, e.target.value) }, L_STATUSES.map((s) => React.createElement("option", { key: s }, s)))),
                                         React.createElement("td", { style: td },
@@ -2330,6 +2367,39 @@ function AdminPanel({ go, user, setUser }) {
                                             React.createElement("div", { className: "field" },
                                                 React.createElement("label", null, "Broker note (public)"),
                                                 React.createElement("textarea", { className: "input", style: { minHeight: 54 }, value: (_a = edit.brokerNote) !== null && _a !== void 0 ? _a : (l.brokerNote || ""), onChange: (e) => setEdit((s) => (Object.assign(Object.assign({}, s), { brokerNote: e.target.value }))) })),
+                                            React.createElement("div", { style: { marginBottom: 14 } },
+                                                React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", margin: "10px 0 8px" } }, "Photos"),
+                                                React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 } },
+                                                    (l.files || []).filter((f) => /^Business photo/i.test(f.label)).map((f) => (React.createElement("div", { key: f.stored, style: { position: "relative" } },
+                                                        React.createElement("img", { src: "/api/admin/files/" + l.id + "/" + encodeURIComponent(f.stored), alt: "", style: { width: 84, height: 64, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" } }),
+                                                        React.createElement("button", { title: "Remove photo", onClick: async () => { if (window.confirm("Remove this photo?")) {
+                                                                try {
+                                                                    await api.del("/api/admin/files/" + l.id + "/" + encodeURIComponent(f.stored));
+                                                                    load();
+                                                                }
+                                                                catch (e) {
+                                                                    flash(e.message);
+                                                                }
+                                                            } }, style: { position: "absolute", top: -6, insetInlineEnd: -6, width: 22, height: 22, borderRadius: 11, border: "none", background: "var(--danger)", color: "#fff", fontSize: 13, lineHeight: 1, cursor: "pointer" } }, "\u00D7")))),
+                                                    !(l.files || []).some((f) => /^Business photo/i.test(f.label)) && React.createElement("span", { className: "muted", style: { fontSize: 13 } }, "No photos yet.")),
+                                                React.createElement("label", { className: "btn light sm", style: { cursor: "pointer" } },
+                                                    "+ Add photos",
+                                                    React.createElement("input", { type: "file", accept: "image/*", multiple: true, style: { display: "none" }, onChange: async (e) => {
+                                                            const files = Array.from(e.target.files || []);
+                                                            if (!files.length)
+                                                                return;
+                                                            const fd = new FormData();
+                                                            files.forEach((f, i2) => fd.append("photo" + i2, f, f.name));
+                                                            try {
+                                                                await api.upload("/api/admin/listings/" + l.id + "/photos", fd);
+                                                                flash("Photos added");
+                                                                load();
+                                                            }
+                                                            catch (e2) {
+                                                                flash(e2.message);
+                                                            }
+                                                            e.target.value = "";
+                                                        } }))),
                                             React.createElement("div", { style: { display: "flex", gap: 8 } },
                                                 React.createElement("button", { className: "btn primary sm", onClick: saveEdit }, "Save changes"),
                                                 React.createElement("button", { className: "btn light sm", onClick: () => setEdit(null) }, "Cancel")))))));
@@ -2368,11 +2438,53 @@ function AdminPanel({ go, user, setUser }) {
                                 React.createElement("select", { className: "input", style: { padding: "6px 8px", fontSize: 13 }, value: q.status, onChange: (e) => setInq(q.id, { status: e.target.value }) }, I_STATUSES.map((s) => React.createElement("option", { key: s }, s))))))),
                         inquiries.length === 0 && React.createElement("tr", null,
                             React.createElement("td", { style: td, colSpan: 6, className: "muted" }, "No inquiries yet.")))))),
+            tab === "users" && React.createElement(AdminUsers, { flash: flash }),
             tab === "create" && React.createElement(AdminCreate, { onDone: () => { load(); setTab("listings"); } }),
             tab === "settings" && React.createElement(AdminSettings, { user: user }),
             React.createElement("p", { className: "muted", style: { fontSize: 12.5, marginTop: 18, display: "flex", gap: 6, alignItems: "center" } },
                 React.createElement(Lock, { size: 13 }),
                 " Direct seller contact information is never exposed to buyers from this panel."))));
+}
+function AdminUsers({ flash }) {
+    const [users, setUsers] = useState(null);
+    const load = () => api.get("/api/admin/users").then((d) => setUsers(d.users)).catch(() => setUsers([]));
+    useEffect(() => { load(); }, []);
+    const th = { textAlign: "start", padding: "10px 12px", fontSize: 12, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--muted)", borderBottom: "1.5px solid var(--border)" };
+    const td = { padding: "12px", fontSize: 14, borderBottom: "1px solid var(--border)", verticalAlign: "top" };
+    if (users === null)
+        return React.createElement("p", { className: "muted" }, "Loading users\u2026");
+    return (React.createElement("div", { className: "card", style: { padding: 0, overflowX: "auto" } },
+        React.createElement("table", { style: { width: "100%", borderCollapse: "collapse", minWidth: 720 } },
+            React.createElement("thead", null,
+                React.createElement("tr", null,
+                    React.createElement("th", { style: th }, "Name"),
+                    React.createElement("th", { style: th }, "Email"),
+                    React.createElement("th", { style: th }, "Mobile"),
+                    React.createElement("th", { style: th }, "Listings"),
+                    React.createElement("th", { style: th }, "Joined"),
+                    React.createElement("th", { style: th }))),
+            React.createElement("tbody", null,
+                users.map((u) => (React.createElement("tr", { key: u.id },
+                    React.createElement("td", { style: td },
+                        React.createElement("div", { style: { fontWeight: 600 } }, u.name || "—"),
+                        u.role === "admin" && React.createElement("span", { className: "badge navy", style: { marginTop: 4 } }, "Admin"),
+                        u.google && React.createElement("span", { className: "badge grey", style: { marginTop: 4 } }, "Google")),
+                    React.createElement("td", { style: td }, u.email || "—"),
+                    React.createElement("td", { style: td }, u.phone || React.createElement("span", { className: "muted" }, "not verified")),
+                    React.createElement("td", { style: td }, u.listings),
+                    React.createElement("td", { style: td }, u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"),
+                    React.createElement("td", { style: td }, u.role !== "admin" && (React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", color: "var(--danger)" }, onClick: async () => { if (window.confirm("Delete user " + (u.email || u.phone || u.name) + "? Their listings stay in the panel, but they can no longer sign in.")) {
+                            try {
+                                await api.del("/api/admin/users/" + u.id);
+                                flash("User deleted");
+                                load();
+                            }
+                            catch (e) {
+                                flash(e.message);
+                            }
+                        } } }, "Delete")))))),
+                users.length === 0 && React.createElement("tr", null,
+                    React.createElement("td", { style: td, colSpan: 6, className: "muted" }, "No registered users yet."))))));
 }
 function AdminCreate({ onDone }) {
     const [f, setF] = useState({ type: "cr", status: "Published", negotiable: true });
@@ -2491,6 +2603,40 @@ function HowItWorks({ go }) {
             React.createElement("div", { style: { display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" } },
                 React.createElement("button", { className: "btn primary", onClick: () => go("browse") }, tr("Browse Opportunities")),
                 React.createElement("button", { className: "btn ghost", onClick: () => go("sell") }, tr("Sell Your Business"))))));
+}
+function CompanyInfoPage() {
+    const Row = ({ k, v }) => (React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: "4px 14px", padding: "10px 0", borderBottom: "1px solid var(--border)" } },
+        React.createElement("div", { style: { minWidth: 220, fontWeight: 600, fontSize: 14 } }, k),
+        React.createElement("div", { style: { flex: 1, fontSize: 14.5, lineHeight: 1.6 } }, v)));
+    return (React.createElement("section", { className: "section", style: { paddingTop: 50, minHeight: "70vh" } },
+        React.createElement("div", { className: "wrap", style: { maxWidth: 760 } },
+            React.createElement("div", { className: "eyebrow" }, tr("Legal")),
+            React.createElement("h1", { className: "h2", style: { marginBottom: 18 } }, tr("Company Information")),
+            React.createElement("div", { className: "card", style: { padding: 26, marginBottom: 18 } },
+                React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 10 } }, tr("Legal Entity and Ownership")),
+                React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 14, lineHeight: 1.7 } }, tr("QatarBiz.net is an online business marketplace owned and operated by:")),
+                React.createElement(Row, { k: tr("Legal name"), v: React.createElement(React.Fragment, null,
+                        React.createElement("strong", null, "Rallou Management Trading and Services"),
+                        React.createElement("br", null),
+                        "\u0631\u0627\u0644\u0648 \u0644\u0644\u0623\u062F\u0627\u0631\u0629 \u0648\u0627\u0644\u062A\u062C\u0627\u0631\u0629 \u0648\u0627\u0644\u062E\u062F\u0645\u0627\u062A") }),
+                React.createElement(Row, { k: tr("Commercial Registration (CR) No."), v: "78826" }),
+                React.createElement(Row, { k: tr("Commercial License No."), v: "336310" }),
+                React.createElement(Row, { k: tr("Licensed by"), v: tr("Ministry of Commerce and Industry — State of Qatar") }),
+                React.createElement(Row, { k: tr("Registered activity for this platform"), v: tr("Agent with Commission (Activity Code 4610101)") }),
+                React.createElement(Row, { k: tr("Operational Address"), v: tr("Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar") }),
+                React.createElement(Row, { k: tr("Contact"), v: React.createElement("a", { href: "tel:+97433310473", style: { color: "var(--navy)", fontWeight: 600 } }, "+974 3331 0473") })),
+            React.createElement("div", { className: "card", style: { padding: 26, marginBottom: 18 } },
+                React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 12 } }, tr("Authorized Representatives")),
+                React.createElement("p", { style: { fontSize: 14.5, lineHeight: 1.8, marginBottom: 6 } },
+                    "\u2022 ",
+                    tr("Mohammed Hassan Sayedkamal Al-Mousawi — Manager (Full and Absolute Authority)")),
+                React.createElement("p", { style: { fontSize: 14.5, lineHeight: 1.8 } },
+                    "\u2022 ",
+                    tr("Faisal Abdulaziz Mohammed Abdulla Al-Naimi — Responsible Manager"))),
+            React.createElement("div", { className: "card", style: { padding: 26 } },
+                React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 10 } }, tr("Verification")),
+                React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.8, marginBottom: 10 } }, tr("The Commercial Registration and Commercial License of Rallou Management Trading and Services are electronically certified documents issued by the Ministry of Commerce and Industry of the State of Qatar and can be verified through the Ministry's official channels (www.moci.gov.qa).")),
+                React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.8 } }, tr("QatarBiz is the trade platform name under which Rallou Management Trading and Services operates its brokerage activity."))))));
 }
 function PrivacyPage() {
     return (React.createElement("section", { className: "section", style: { paddingTop: 44 } },
@@ -2646,6 +2792,7 @@ function App() {
         page === "sell-bz" && React.createElement(SellBZ, { user: user, go: go, setUser: setUser }),
         page === "how" && React.createElement(HowItWorks, { go: go }),
         page === "privacy-page" && React.createElement(PrivacyPage, null),
+        page === "company-info" && React.createElement(CompanyInfoPage, null),
         page === "about" && React.createElement(About, { go: go }),
         page === "contact" && React.createElement(Contact, null),
         page === "login" && (user ? (user.needsName ? React.createElement(NameGate, { user: user, setUser: setUser }) : user.needsPhone ? React.createElement(PhoneVerify, { user: user, setUser: setUser }) : user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : React.createElement(AccountDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),

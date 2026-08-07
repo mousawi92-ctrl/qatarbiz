@@ -148,7 +148,7 @@ function parseMultipart(buf, contentType) {
 }
 
 /* ---------------- listings ---------------- */
-const PUBLIC_FIELDS = ["id", "type", "title", "category", "location", "established", "price", "negotiable",
+const PUBLIC_FIELDS = ["id", "type", "views", "title", "category", "location", "established", "price", "negotiable",
   "expiry", "legalForm", "permit", "estCard", "staff", "rentMonthly", "leaseExpiry", "revenueRange",
   "badges", "activities", "extraLicenses", "desc", "brokerNote", "immediate", "status", "createdAt"];
 function publicView(l) {
@@ -396,6 +396,7 @@ async function handle(req, res) {
   if (mList && req.method === "GET") {
     const l = db.listings.find((x) => x.id === mList[1]);
     if (!l || (l.status !== "Published" && l.status !== "Sold")) return bad(res, 404, "Listing not found");
+    l.views = (l.views || 0) + 1; saveDB();
     return json(res, 200, { listing: publicView(l) });
   }
 
@@ -556,6 +557,60 @@ async function handle(req, res) {
   /* ---------- admin ---------- */
   if (p.startsWith("/api/admin/")) {
     if (!isAdmin) return bad(res, 403, "Admin access required");
+
+
+    if (p === "/api/admin/users" && req.method === "GET") {
+      const users = db.users.map((u) => ({
+        id: u.id, name: u.name, email: u.email, phone: u.phone, role: u.role,
+        createdAt: u.createdAt, google: !!u.google,
+        listings: db.listings.filter((l) => l.sellerId === u.id).length,
+      })).sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+      return json(res, 200, { users });
+    }
+
+    const mUser = p.match(/^\/api\/admin\/users\/([A-Za-z0-9-]+)$/);
+    if (mUser && req.method === "DELETE") {
+      const u = db.users.find((x) => x.id === mUser[1]);
+      if (!u) return bad(res, 404, "User not found");
+      if (u.role === "admin") return bad(res, 400, "Cannot delete the admin account.");
+      db.users = db.users.filter((x) => x.id !== u.id);
+      for (const [t, s] of Object.entries(db.sessions)) if (s.userId === u.id) delete db.sessions[t];
+      saveDBNow();
+      return json(res, 200, { ok: true });
+    }
+
+    const mAdmPhotos = p.match(/^\/api\/admin\/listings\/([A-Za-z0-9-]+)\/photos$/);
+    if (mAdmPhotos && req.method === "POST") {
+      const l = db.listings.find((x) => x.id === mAdmPhotos[1]);
+      if (!l) return bad(res, 404, "Listing not found");
+      const buf = await readBody(req);
+      const mp = parseMultipart(buf, req.headers["content-type"]);
+      if (!mp || !mp.files.length) return bad(res, 400, "No files received");
+      const dir = path.join(FILES_DIR, l.id);
+      fs.mkdirSync(dir, { recursive: true });
+      l.files ||= [];
+      let n = l.files.filter((f) => /^Business photo/i.test(f.label)).length;
+      for (const f of mp.files.slice(0, 20)) {
+        n += 1;
+        const safe = f.filename.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 120) || "photo.jpg";
+        const stored = crypto.randomBytes(6).toString("hex") + "-" + safe;
+        fs.writeFileSync(path.join(dir, stored), f.data);
+        l.files.push({ label: "Business photo " + n, name: safe, stored, size: f.data.length });
+      }
+      saveDBNow();
+      return json(res, 200, { ok: true, count: n });
+    }
+
+    const mDelFile = p.match(/^\/api\/admin\/files\/([A-Za-z0-9-]+)\/(.+)$/);
+    if (mDelFile && req.method === "DELETE") {
+      const l = db.listings.find((x) => x.id === mDelFile[1]);
+      if (!l) return bad(res, 404, "Listing not found");
+      const stored = decodeURIComponent(mDelFile[2]).replace(/[^A-Za-z0-9._-]/g, "_");
+      l.files = (l.files || []).filter((f) => f.stored !== stored);
+      try { fs.unlinkSync(path.join(FILES_DIR, l.id, stored)); } catch (e) {}
+      saveDBNow();
+      return json(res, 200, { ok: true });
+    }
 
     if (p === "/api/admin/overview" && req.method === "GET") {
       const listings = db.listings.slice().sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
