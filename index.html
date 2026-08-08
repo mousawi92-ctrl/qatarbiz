@@ -638,8 +638,18 @@ function usePublished() {
 }
 let WIZ_FILES = {};
 const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefined ? a[tr(en)] : a[en]; return String(v || "").trim().length > 0; };
+const AREAS = ["West Bay", "Al Sadd", "Musheireb", "Corniche Area", "Old Airport", "Najma and Umm Ghuwailina", "Al Mansoura", "Salwa Road", "C Ring Road", "Al Thumama", "Abu Hamour", "Al Muntazah", "Doha - Other", "Lusail", "The Pearl", "Al Rayyan", "Al Gharrafa and Al Duhail", "Industrial Area", "Al Wakrah", "Al Wukair", "Umm Salal", "Al Khor", "Al Daayen", "Other Areas"];
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Business location (area)": "موقع النشاط (المنطقة)",
+    "Select the area": "اختر المنطقة",
+    "West Bay": "الخليج الغربي", "Al Sadd": "السد", "Musheireb": "مشيرب", "Corniche Area": "منطقة الكورنيش",
+    "Old Airport": "المطار القديم", "Najma and Umm Ghuwailina": "نجمة وأم غويلينا", "Al Mansoura": "المنصورة",
+    "Salwa Road": "طريق سلوى", "C Ring Road": "الطريق الدائري الثالث", "Al Thumama": "الثمامة",
+    "Abu Hamour": "أبو هامور", "Al Muntazah": "المنتزه", "Doha - Other": "الدوحة - أخرى",
+    "Lusail": "لوسيل", "The Pearl": "اللؤلؤة", "Al Rayyan": "الريان", "Al Gharrafa and Al Duhail": "الغرافة والدحيل",
+    "Industrial Area": "المنطقة الصناعية", "Al Wakrah": "الوكرة", "Al Wukair": "الوكير", "Umm Salal": "أم صلال",
+    "Al Khor": "الخور", "Al Daayen": "الظعاين", "Other Areas": "مناطق أخرى",
     "Company Information": "معلومات الشركة",
     "Legal Entity and Ownership": "الكيان القانوني والملكية",
     "QatarBiz.net is an online business marketplace owned and operated by:": "‏QatarBiz.net هو سوق أعمال إلكتروني مملوك ومُدار من قبل:",
@@ -652,9 +662,6 @@ Object.assign(AR, {
     "Agent with Commission (Activity Code 4610101)": "وكيل بالعمولة (رمز النشاط 4610101)",
     "Operational Address": "العنوان التشغيلي",
     "Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar": "مبنى 42، شارع 850، منطقة 60، وحدة 60، الدوحة، دولة قطر",
-    "Authorized Representatives": "الممثلون المفوضون",
-    "Mohammed Hassan Sayedkamal Al-Mousawi — Manager (Full and Absolute Authority)": "محمد حسن سيدكمال الموسوي — مدير (صلاحيات كاملة ومطلقة)",
-    "Faisal Abdulaziz Mohammed Abdulla Al-Naimi — Responsible Manager": "فيصل عبدالعزيز محمد عبدالله النعيمي — المدير المسؤول",
     "Contact": "التواصل",
     "Verification": "التحقق",
     "The Commercial Registration and Commercial License of Rallou Management Trading and Services are electronically certified documents issued by the Ministry of Commerce and Industry of the State of Qatar and can be verified through the Ministry's official channels (www.moci.gov.qa).": "السجل التجاري والرخصة التجارية لشركة رالو للإدارة والتجارة والخدمات وثائق إلكترونية معتمدة صادرة عن وزارة التجارة والصناعة بدولة قطر ويمكن التحقق منها عبر القنوات الرسمية للوزارة (www.moci.gov.qa).",
@@ -993,7 +1000,7 @@ function ListingCard({ l, go }) {
             sold ? React.createElement("span", { className: "badge gold" }, tr("Sold through QatarBiz")) : React.createElement("span", { className: "ref" }, l.id)),
         React.createElement("h3", { className: "h3", style: { fontSize: 17.5, marginBottom: 6 } }, tr(l.title)),
         React.createElement("div", { className: "muted", style: { fontSize: 13.5, marginBottom: 12, display: "flex", justifyContent: "space-between", gap: 8 } },
-            React.createElement("span", null, l.established ? `${tr("Established")} ${l.established} · ${AGE(l.established)} ${tr("years")}` : ""),
+            React.createElement("span", null, [l.established ? `${tr("Established")} ${l.established} · ${AGE(l.established)} ${tr("years")}` : "", !isCR && l.location ? tr(l.location) : ""].filter(Boolean).join(" · ")),
             React.createElement("span", { style: { whiteSpace: "nowrap" } },
                 React.createElement(Eye, { size: 13, style: { verticalAlign: "-2px" } }),
                 " ",
@@ -1833,6 +1840,11 @@ function SellBZ({ user, go, setUser }) {
                     React.createElement(YesNo, { value: s.aud, onChange: (v) => set("aud", v) }))));
             case 3: return (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Business location (area)")),
+                    React.createElement("select", { className: "input", value: s.locationArea || "", onChange: (e) => set("locationArea", e.target.value) },
+                        React.createElement("option", { value: "" }, tr("Select the area")),
+                        AREAS.map((a) => React.createElement("option", { key: a, value: a }, tr(a))))),
+                React.createElement("div", { className: "field" },
                     React.createElement("label", null, tr("Number of employees")),
                     React.createElement("input", { className: "input" })),
                 React.createElement("div", { className: "field" },
@@ -1863,7 +1875,7 @@ function SellBZ({ user, go, setUser }) {
                     if (i === 2)
                         return !!s.credit && !!s.cheq && !!s.aud;
                     if (i === 3)
-                        return got(a, "Number of employees") && got(a, "Total monthly salaries (QAR)") && got(a, "Monthly rent (QAR)") && got(a, "Staff accommodation rent (QAR / month)");
+                        return !!s.locationArea && got(a, "Number of employees") && got(a, "Total monthly salaries (QAR)") && got(a, "Monthly rent (QAR)") && got(a, "Staff accommodation rent (QAR / month)");
                     if (i === 4)
                         return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
                     return true;
@@ -2625,14 +2637,6 @@ function CompanyInfoPage() {
                 React.createElement(Row, { k: tr("Registered activity for this platform"), v: tr("Agent with Commission (Activity Code 4610101)") }),
                 React.createElement(Row, { k: tr("Operational Address"), v: tr("Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar") }),
                 React.createElement(Row, { k: tr("Contact"), v: React.createElement("a", { href: "tel:+97433310473", style: { color: "var(--navy)", fontWeight: 600 } }, "+974 3331 0473") })),
-            React.createElement("div", { className: "card", style: { padding: 26, marginBottom: 18 } },
-                React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 12 } }, tr("Authorized Representatives")),
-                React.createElement("p", { style: { fontSize: 14.5, lineHeight: 1.8, marginBottom: 6 } },
-                    "\u2022 ",
-                    tr("Mohammed Hassan Sayedkamal Al-Mousawi — Manager (Full and Absolute Authority)")),
-                React.createElement("p", { style: { fontSize: 14.5, lineHeight: 1.8 } },
-                    "\u2022 ",
-                    tr("Faisal Abdulaziz Mohammed Abdulla Al-Naimi — Responsible Manager"))),
             React.createElement("div", { className: "card", style: { padding: 26 } },
                 React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 10 } }, tr("Verification")),
                 React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.8, marginBottom: 10 } }, tr("The Commercial Registration and Commercial License of Rallou Management Trading and Services are electronically certified documents issued by the Ministry of Commerce and Industry of the State of Qatar and can be verified through the Ministry's official channels (www.moci.gov.qa).")),

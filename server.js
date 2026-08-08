@@ -495,6 +495,7 @@ async function handle(req, res) {
       price: priceEntry ? (Number(String(priceEntry[1]).replace(/[^0-9.]/g, "")) || 0) : 0,
       negotiable: structured && structured.neg === "Yes",
       category: clean((structured && structured.category) || "", 120),
+      location: clean((structured && structured.locationArea) || "", 120),
       badges: ["Broker Managed"], extraLicenses: [],
     };
     if (ex.businessName) listing.private["Legal business name (extracted)"] = clean(ex.businessName, 200);
