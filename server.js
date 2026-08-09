@@ -496,6 +496,9 @@ async function handle(req, res) {
       negotiable: structured && structured.neg === "Yes",
       category: clean((structured && structured.category) || "", 120),
       location: clean((structured && structured.locationArea) || "", 120),
+      staff: (function () { const e = Object.entries(rest).find(([k]) => /number of employees|عدد الموظفين/i.test(k)); return e ? clean(e[1], 40) : ""; })(),
+      rentMonthly: (function () { const e = Object.entries(rest).find(([k]) => /monthly rent|الإيجار الشهري/i.test(k)); return e ? (Number(String(e[1]).replace(/[^0-9.]/g, "")) || "") : ""; })(),
+      revenueRange: (function () { const e = Object.entries(rest).find(([k]) => /monthly revenue|الإيراد الشهري/i.test(k)); return e ? clean(e[1], 120) : ""; })(),
       badges: ["Broker Managed"], extraLicenses: [],
     };
     if (ex.businessName) listing.private["Legal business name (extracted)"] = clean(ex.businessName, 200);

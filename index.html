@@ -641,6 +641,8 @@ const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefine
 const AREAS = ["West Bay", "Al Sadd", "Musheireb", "Corniche Area", "Old Airport", "Najma and Umm Ghuwailina", "Al Mansoura", "Salwa Road", "C Ring Road", "Al Thumama", "Abu Hamour", "Al Muntazah", "Doha - Other", "Lusail", "The Pearl", "Al Rayyan", "Al Gharrafa and Al Duhail", "Industrial Area", "Al Wakrah", "Al Wukair", "Umm Salal", "Al Khor", "Al Daayen", "Other Areas"];
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Commercial Registration for Sale": "سجل تجاري للبيع",
+    "Running Business for Sale": "نشاط تجاري قائم للبيع",
     "Chat with us on WhatsApp": "تواصل معنا عبر واتساب",
     "WhatsApp": "واتساب",
     "QatarBiz operates as a broker-managed marketplace for the sale of commercial registrations and operating businesses in Qatar. Use of the platform constitutes acceptance of these terms.": "تعمل منصة QatarBiz كسوق تُدار عبر وسيط لبيع السجلات التجارية والأنشطة التجارية القائمة في قطر. ويُعد استخدام المنصة موافقةً على هذه الشروط.",
@@ -1908,25 +1910,17 @@ function SellBZ({ user, go, setUser }) {
 }
 async function downloadSocialCard(l, template = 0) {
     const W = 1080, H = 1080;
-    const MAROON = "#8A1538", DARK = "#6E102C", GOLD = "#C6A664", IVORY = "#FBFAF7", SAND = "#F5EAD3";
+    const MAROON = "#8A1538", DARK = "#6E102C", GOLD = "#C6A664", SAND = "#F5EAD3", IVORY = "#FBFAF7";
     const SERIF = "Fraunces, Georgia, serif", SANS = "'Public Sans', Arial, sans-serif";
     const c = document.createElement("canvas");
     c.width = W;
     c.height = H;
     const x = c.getContext("2d");
+    const A = (s) => (AR[s] !== undefined ? AR[s] : s);
     const rr = (x1, y1, w, h, r) => { x.beginPath(); x.moveTo(x1 + r, y1); x.arcTo(x1 + w, y1, x1 + w, y1 + h, r); x.arcTo(x1 + w, y1 + h, x1, y1 + h, r); x.arcTo(x1, y1 + h, x1, y1, r); x.arcTo(x1, y1, x1 + w, y1, r); x.closePath(); };
-    const wrap = (text, maxW, font) => { x.font = font; const words = String(text || "").split(/\s+/); const lines = []; let line = ""; for (const w2 of words) {
-        const t = line ? line + " " + w2 : w2;
-        if (x.measureText(t).width > maxW && line) {
-            lines.push(line);
-            line = w2;
-        }
-        else
-            line = t;
-    } if (line)
-        lines.push(line); return lines.slice(0, 2); };
     const loadImg = (url) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
-    // background
+    const fit = (text, font, maxW) => { x.font = font; let t = String(text || ""); while (x.measureText(t).width > maxW && t.length > 3)
+        t = t.slice(0, -2); return t; };
     const g = x.createLinearGradient(0, 0, W, H);
     g.addColorStop(0, MAROON);
     g.addColorStop(1, DARK);
@@ -1934,8 +1928,8 @@ async function downloadSocialCard(l, template = 0) {
     x.fillRect(0, 0, W, H);
     const isCR = l.type === "cr";
     const sold = l.status === "Sold" || l.status === "Sold (Hidden)";
-    // ---- top visual ----
-    let topH = 560;
+    // ---------- top visual ----------
+    let topH = 470;
     let photoUrl = (l.photos && l.photos[0]) || null;
     if (!photoUrl && l.files) {
         const f = l.files.find((f2) => /^Business photo/i.test(f2.label));
@@ -1949,7 +1943,7 @@ async function downloadSocialCard(l, template = 0) {
             const scale = Math.max(W / im.width, topH / im.height);
             const dw = im.width * scale, dh = im.height * scale;
             x.drawImage(im, (W - dw) / 2, (topH - dh) / 2, dw, dh);
-            const og = x.createLinearGradient(0, topH - 320, 0, topH);
+            const og = x.createLinearGradient(0, topH - 260, 0, topH);
             og.addColorStop(0, "rgba(110,16,44,0)");
             og.addColorStop(1, MAROON);
             x.fillStyle = og;
@@ -1959,129 +1953,160 @@ async function downloadSocialCard(l, template = 0) {
         catch (e) { }
     }
     if (!drewPhoto) {
-        topH = 470;
-        // CR document motif / fallback panel
         x.fillStyle = IVORY;
-        rr(120, 150, W - 240, 300, 22);
+        rr(110, 140, W - 220, 290, 22);
         x.fill();
         x.fillStyle = MAROON;
-        rr(120, 150, W - 240, 74, 22);
+        rr(110, 140, W - 220, 72, 22);
         x.fill();
-        x.fillStyle = MAROON;
-        x.fillRect(120, 190, W - 240, 34);
+        x.fillRect(110, 178, W - 220, 34);
         x.fillStyle = "#fff";
-        x.font = "700 30px " + SERIF;
+        x.font = "700 28px " + SERIF;
         x.textAlign = "left";
-        x.fillText(isCR ? "Commercial Registration" : "Running Business", 150, 198);
+        x.fillText(isCR ? "Commercial Registration" : "Running Business", 140, 188);
         x.fillStyle = SAND;
         x.font = "600 24px monospace";
         x.textAlign = "right";
-        x.fillText(l.id || "", W - 150, 198);
+        x.fillText(l.id || "", W - 140, 188);
         x.textAlign = "left";
         x.fillStyle = "#6B6257";
-        x.font = "600 20px " + SANS;
-        x.fillText("ESTABLISHED", 150, 280);
+        x.font = "600 19px " + SANS;
+        x.fillText("ESTABLISHED \u2022 " + "\u0627\u0644\u062a\u0623\u0633\u064a\u0633", 140, 266);
         x.fillStyle = MAROON;
         x.font = "700 40px " + SERIF;
-        x.fillText(String(l.established || "—"), 150, 325);
+        x.fillText(String(l.established || "\u2014"), 140, 312);
         x.fillStyle = "#6B6257";
-        x.font = "600 20px " + SANS;
-        x.fillText(isCR ? "EXPIRY" : "LOCATION", 520, 280);
+        x.font = "600 19px " + SANS;
+        x.fillText("EXPIRY \u2022 " + "\u0627\u0644\u0627\u0646\u062a\u0647\u0627\u0621", 520, 266);
         x.fillStyle = MAROON;
         x.font = "700 40px " + SERIF;
-        x.fillText(String(isCR ? (l.expiry || "—") : (l.location || "Doha")).slice(0, 16), 520, 325);
+        x.fillText(fit(l.expiry || "\u2014", "700 40px " + SERIF, 380), 520, 312);
         x.fillStyle = "#6B6257";
-        x.font = "600 20px " + SANS;
-        x.fillText(isCR ? "ACTIVITIES" : "CATEGORY", 150, 385);
+        x.font = "600 19px " + SANS;
+        x.fillText("ACTIVITIES \u2022 " + "\u0627\u0644\u0623\u0646\u0634\u0637\u0629", 140, 368);
         x.fillStyle = "#3d3630";
-        x.font = "500 26px " + SANS;
-        const act = isCR ? (l.activities || []).slice(0, 2).join("  ·  ") : (l.category || "");
-        x.fillText(String(act).slice(0, 52) || "—", 150, 420);
+        x.font = "500 25px " + SANS;
+        x.fillText(fit((l.activities || []).slice(0, 2).join("  \u00b7  ") || "\u2014", "500 25px " + SANS, W - 300), 140, 402);
     }
-    // ---- "FOR SALE" chip ----
+    // chip + logo
     x.fillStyle = GOLD;
-    rr(48, 44, 300, 66, 33);
+    rr(44, 42, 296, 64, 32);
     x.fill();
     x.fillStyle = DARK;
-    x.font = "800 28px " + SANS;
+    x.font = "800 27px " + SANS;
     x.textAlign = "center";
-    x.fillText("FOR SALE • للبيع", 198, 88);
-    // ---- logo top right ----
+    x.fillText(sold ? "SOLD \u2022 \u062a\u0645 \u0627\u0644\u0628\u064a\u0639" : "FOR SALE \u2022 \u0644\u0644\u0628\u064a\u0639", 192, 84);
     x.fillStyle = "#fff";
-    rr(W - 118, 40, 70, 70, 18);
+    rr(W - 112, 38, 68, 68, 18);
     x.fill();
     x.fillStyle = MAROON;
-    x.font = "800 44px " + SERIF;
-    x.fillText("Q", W - 83, 96);
-    x.textAlign = "left";
-    // ---- title ----
-    const titleFont = "700 58px " + SERIF;
-    const lines = wrap(l.title || (isCR ? "Commercial Registration for Sale" : "Running Business for Sale"), W - 160, titleFont);
+    x.font = "800 42px " + SERIF;
+    x.fillText("Q", W - 78, 92);
+    // ---------- titles (centered, bilingual) ----------
+    x.textAlign = "center";
+    const enTitle = l.title || (isCR ? "Commercial Registration for Sale" : "Running Business for Sale");
+    const arTitle = A(enTitle) !== enTitle ? A(enTitle) : (isCR ? "\u0633\u062c\u0644 \u062a\u062c\u0627\u0631\u064a \u0644\u0644\u0628\u064a\u0639" : "\u0646\u0634\u0627\u0637 \u062a\u062c\u0627\u0631\u064a \u0642\u0627\u0626\u0645 \u0644\u0644\u0628\u064a\u0639");
     x.fillStyle = "#fff";
-    x.font = titleFont;
-    let ty = topH + 70;
-    for (const ln of lines) {
-        x.fillText(ln, 80, ty);
-        ty += 70;
-    }
-    // ---- facts line ----
-    const facts = [];
+    x.font = "700 54px " + SERIF;
+    x.fillText(fit(enTitle, "700 54px " + SERIF, W - 140), W / 2, 545);
+    x.fillStyle = SAND;
+    x.font = "600 38px " + SANS;
+    x.fillText(fit(arTitle, "600 38px " + SANS, W - 160), W / 2, 600);
+    // ---------- stat boxes (bilingual) ----------
+    const stats = [];
     if (l.established)
-        facts.push("Est. " + l.established);
-    if (!isCR && l.location)
-        facts.push(l.location);
-    if (l.category && !isCR)
-        facts.push(l.category);
-    if (isCR && (l.activities || []).length)
-        facts.push(l.activities[0]);
-    x.fillStyle = GOLD;
-    x.font = "600 30px " + SANS;
-    x.fillText(facts.join("   •   ").slice(0, 60), 80, ty + 8);
-    // ---- price ----
-    const py = ty + 120;
-    x.fillStyle = "rgba(255,255,255,.12)";
-    rr(80, py - 62, W - 160, 120, 20);
-    x.fill();
-    x.fillStyle = SAND;
-    x.font = "600 24px " + SANS;
-    x.fillText("ASKING PRICE — السعر المطلوب", 110, py - 22);
-    x.fillStyle = "#fff";
-    x.font = "800 64px " + SERIF;
-    x.fillText(l.price ? "QAR " + Number(l.price).toLocaleString() : "Contact us", 110, py + 38);
-    if (l.negotiable && l.price) {
-        x.fillStyle = GOLD;
-        x.font = "600 26px " + SANS;
-        x.textAlign = "right";
-        x.fillText("Negotiable • قابل للتفاوض", W - 110, py + 30);
-        x.textAlign = "left";
+        stats.push({ v: String(l.established), en: "ESTABLISHED", ar: "\u0627\u0644\u062a\u0623\u0633\u064a\u0633" });
+    if (isCR) {
+        if (l.expiry)
+            stats.push({ v: fit(l.expiry, "700 36px " + SERIF, 250), en: "EXPIRY", ar: "\u0627\u0644\u0627\u0646\u062a\u0647\u0627\u0621" });
     }
-    // ---- footer ----
-    x.fillStyle = "rgba(0,0,0,.25)";
-    x.fillRect(0, H - 110, W, 110);
+    else {
+        if (l.location)
+            stats.push({ v: fit(A(l.location), "700 36px " + SERIF, 250), en: "LOCATION", ar: "\u0627\u0644\u0645\u0648\u0642\u0639" });
+        if (l.staff)
+            stats.push({ v: String(l.staff), en: "STAFF", ar: "\u0627\u0644\u0645\u0648\u0638\u0641\u0648\u0646" });
+        else if (l.category)
+            stats.push({ v: fit(A(l.category), "700 36px " + SERIF, 250), en: "CATEGORY", ar: "\u0627\u0644\u0641\u0626\u0629" });
+    }
+    const bw = 292, bh = 130, gap = 18;
+    const totalW = stats.length * bw + (stats.length - 1) * gap;
+    let bx = (W - totalW) / 2, by = 640;
+    for (const s of stats) {
+        x.fillStyle = "rgba(255,255,255,.10)";
+        rr(bx, by, bw, bh, 18);
+        x.fill();
+        x.fillStyle = "#fff";
+        x.font = "700 36px " + SERIF;
+        x.fillText(s.v, bx + bw / 2, by + 58);
+        x.fillStyle = GOLD;
+        x.font = "600 18px " + SANS;
+        x.fillText(s.en + " \u2022 " + s.ar, bx + bw / 2, by + 100);
+        bx += bw + gap;
+    }
+    // extra bilingual line for BZ (rent / revenue / category)
+    let extraY = by + bh + 44;
+    if (!isCR) {
+        const d2 = [];
+        if (l.rentMonthly)
+            d2.push("\u0627\u0644\u0625\u064a\u062c\u0627\u0631 Rent: QAR " + Number(l.rentMonthly).toLocaleString() + "/mo");
+        if (l.revenueRange)
+            d2.push("\u0627\u0644\u0625\u064a\u0631\u0627\u062f Revenue: " + String(l.revenueRange).slice(0, 18));
+        if (l.staff && l.category)
+            d2.push(A(l.category));
+        if (d2.length) {
+            x.fillStyle = "rgba(255,255,255,.85)";
+            x.font = "500 27px " + SANS;
+            x.fillText(fit(d2.join("   \u2022   "), "500 27px " + SANS, W - 140), W / 2, extraY);
+            extraY += 46;
+        }
+    }
+    else if ((l.activities || []).length && drewPhoto === false) {
+        // activities already inside the document motif
+    }
+    // ---------- price banner (bilingual) ----------
+    const py = Math.max(extraY + 16, 846);
+    x.fillStyle = "rgba(0,0,0,.28)";
+    rr(90, py - 66, W - 180, 128, 22);
+    x.fill();
+    x.fillStyle = GOLD;
+    x.font = "600 25px " + SANS;
+    x.fillText("ASKING PRICE \u2022 \u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0645\u0637\u0644\u0648\u0628", W / 2, py - 24);
     x.fillStyle = "#fff";
-    x.font = "700 34px " + SERIF;
-    x.fillText("QatarBiz.net", 80, H - 42);
-    x.fillStyle = SAND;
-    x.font = "600 26px " + SANS;
-    x.textAlign = "right";
-    x.fillText((l.id || "") + "   •   +974 3331 0473", W - 80, H - 42);
+    x.font = "800 62px " + SERIF;
+    x.fillText(l.price ? "QAR " + Number(l.price).toLocaleString() : "\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u2022 Contact us", W / 2, py + 40);
+    if (l.negotiable && l.price) {
+        x.fillStyle = SAND;
+        x.font = "600 24px " + SANS;
+        x.fillText("Negotiable \u2022 \u0642\u0627\u0628\u0644 \u0644\u0644\u062a\u0641\u0627\u0648\u0636", W / 2, py + 86);
+    }
+    // ---------- footer ----------
+    x.fillStyle = "rgba(0,0,0,.30)";
+    x.fillRect(0, H - 96, W, 96);
     x.textAlign = "left";
-    // ---- SOLD stamp ----
+    x.fillStyle = "#fff";
+    x.font = "700 32px " + SERIF;
+    x.fillText("QatarBiz.net", 70, H - 36);
+    x.textAlign = "right";
+    x.fillStyle = SAND;
+    x.font = "600 25px " + SANS;
+    x.fillText((l.id || "") + "   \u2022   +974 3331 0473", W - 70, H - 36);
+    x.textAlign = "left";
+    // ---------- SOLD stamp ----------
     if (sold) {
         x.save();
-        x.translate(W / 2, H / 2 - 40);
-        x.rotate(-0.22);
+        x.translate(W / 2, H / 2 - 60);
+        x.rotate(-0.2);
         x.fillStyle = "rgba(255,255,255,.95)";
-        rr(-330, -85, 660, 170, 24);
+        rr(-330, -82, 660, 164, 24);
         x.fill();
         x.strokeStyle = MAROON;
         x.lineWidth = 10;
-        rr(-330, -85, 660, 170, 24);
+        rr(-330, -82, 660, 164, 24);
         x.stroke();
         x.fillStyle = MAROON;
-        x.font = "800 84px " + SERIF;
+        x.font = "800 80px " + SERIF;
         x.textAlign = "center";
-        x.fillText("SOLD • تم البيع", 0, 30);
+        x.fillText("SOLD \u2022 \u062a\u0645 \u0627\u0644\u0628\u064a\u0639", 0, 28);
         x.restore();
         x.textAlign = "left";
     }
