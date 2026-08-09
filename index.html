@@ -1906,83 +1906,190 @@ function SellBZ({ user, go, setUser }) {
                     return true;
                 }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
 }
-function downloadSocialCard(l, template = 0) {
+async function downloadSocialCard(l, template = 0) {
+    const W = 1080, H = 1080;
+    const MAROON = "#8A1538", DARK = "#6E102C", GOLD = "#C6A664", IVORY = "#FBFAF7", SAND = "#F5EAD3";
+    const SERIF = "Fraunces, Georgia, serif", SANS = "'Public Sans', Arial, sans-serif";
     const c = document.createElement("canvas");
-    c.width = 1080;
-    c.height = 1080;
+    c.width = W;
+    c.height = H;
     const x = c.getContext("2d");
-    const navy = "#8A1538", deep = "#6E102C", gold = "#C6A664", teal = "#1F7A5C";
+    const rr = (x1, y1, w, h, r) => { x.beginPath(); x.moveTo(x1 + r, y1); x.arcTo(x1 + w, y1, x1 + w, y1 + h, r); x.arcTo(x1 + w, y1 + h, x1, y1 + h, r); x.arcTo(x1, y1 + h, x1, y1, r); x.arcTo(x1, y1, x1 + w, y1, r); x.closePath(); };
+    const wrap = (text, maxW, font) => { x.font = font; const words = String(text || "").split(/\s+/); const lines = []; let line = ""; for (const w2 of words) {
+        const t = line ? line + " " + w2 : w2;
+        if (x.measureText(t).width > maxW && line) {
+            lines.push(line);
+            line = w2;
+        }
+        else
+            line = t;
+    } if (line)
+        lines.push(line); return lines.slice(0, 2); };
+    const loadImg = (url) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = url; });
     // background
-    if (template === 0) {
-        x.fillStyle = navy;
-        x.fillRect(0, 0, 1080, 1080);
+    const g = x.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, MAROON);
+    g.addColorStop(1, DARK);
+    x.fillStyle = g;
+    x.fillRect(0, 0, W, H);
+    const isCR = l.type === "cr";
+    const sold = l.status === "Sold" || l.status === "Sold (Hidden)";
+    // ---- top visual ----
+    let topH = 560;
+    let photoUrl = (l.photos && l.photos[0]) || null;
+    if (!photoUrl && l.files) {
+        const f = l.files.find((f2) => /^Business photo/i.test(f2.label));
+        if (f)
+            photoUrl = "/api/admin/files/" + l.id + "/" + encodeURIComponent(f.stored);
     }
-    else if (template === 1) {
-        const g = x.createLinearGradient(0, 0, 1080, 1080);
-        g.addColorStop(0, navy);
-        g.addColorStop(1, deep);
-        x.fillStyle = g;
-        x.fillRect(0, 0, 1080, 1080);
+    let drewPhoto = false;
+    if (!isCR && photoUrl) {
+        try {
+            const im = await loadImg(photoUrl);
+            const scale = Math.max(W / im.width, topH / im.height);
+            const dw = im.width * scale, dh = im.height * scale;
+            x.drawImage(im, (W - dw) / 2, (topH - dh) / 2, dw, dh);
+            const og = x.createLinearGradient(0, topH - 320, 0, topH);
+            og.addColorStop(0, "rgba(110,16,44,0)");
+            og.addColorStop(1, MAROON);
+            x.fillStyle = og;
+            x.fillRect(0, 0, W, topH);
+            drewPhoto = true;
+        }
+        catch (e) { }
     }
-    else {
-        x.fillStyle = "#FFFFFF";
-        x.fillRect(0, 0, 1080, 1080);
-        x.fillStyle = navy;
-        x.fillRect(0, 0, 1080, 220);
+    if (!drewPhoto) {
+        topH = 470;
+        // CR document motif / fallback panel
+        x.fillStyle = IVORY;
+        rr(120, 150, W - 240, 300, 22);
+        x.fill();
+        x.fillStyle = MAROON;
+        rr(120, 150, W - 240, 74, 22);
+        x.fill();
+        x.fillStyle = MAROON;
+        x.fillRect(120, 190, W - 240, 34);
+        x.fillStyle = "#fff";
+        x.font = "700 30px " + SERIF;
+        x.textAlign = "left";
+        x.fillText(isCR ? "Commercial Registration" : "Running Business", 150, 198);
+        x.fillStyle = SAND;
+        x.font = "600 24px monospace";
+        x.textAlign = "right";
+        x.fillText(l.id || "", W - 150, 198);
+        x.textAlign = "left";
+        x.fillStyle = "#6B6257";
+        x.font = "600 20px " + SANS;
+        x.fillText("ESTABLISHED", 150, 280);
+        x.fillStyle = MAROON;
+        x.font = "700 40px " + SERIF;
+        x.fillText(String(l.established || "—"), 150, 325);
+        x.fillStyle = "#6B6257";
+        x.font = "600 20px " + SANS;
+        x.fillText(isCR ? "EXPIRY" : "LOCATION", 520, 280);
+        x.fillStyle = MAROON;
+        x.font = "700 40px " + SERIF;
+        x.fillText(String(isCR ? (l.expiry || "—") : (l.location || "Doha")).slice(0, 16), 520, 325);
+        x.fillStyle = "#6B6257";
+        x.font = "600 20px " + SANS;
+        x.fillText(isCR ? "ACTIVITIES" : "CATEGORY", 150, 385);
+        x.fillStyle = "#3d3630";
+        x.font = "500 26px " + SANS;
+        const act = isCR ? (l.activities || []).slice(0, 2).join("  ·  ") : (l.category || "");
+        x.fillText(String(act).slice(0, 52) || "—", 150, 420);
     }
-    const light = template !== 2;
-    const fg = light ? "#FFFFFF" : navy;
-    // frame
-    x.strokeStyle = gold;
-    x.lineWidth = 3;
-    x.strokeRect(46, 46, 988, 988);
-    // header
-    x.fillStyle = gold;
-    x.font = "600 30px Georgia";
+    // ---- "FOR SALE" chip ----
+    x.fillStyle = GOLD;
+    rr(48, 44, 300, 66, 33);
+    x.fill();
+    x.fillStyle = DARK;
+    x.font = "800 28px " + SANS;
     x.textAlign = "center";
-    x.fillText(l.type === "cr" ? "COMMERCIAL REGISTRATION FOR SALE" : "BUSINESS FOR SALE", 540, 150);
-    x.fillStyle = light || template === 2 ? "#FFFFFF" : fg;
-    if (template === 2)
-        x.fillStyle = "#FFFFFF";
-    // title
-    x.fillStyle = template === 2 ? navy : "#FFFFFF";
-    x.font = "600 52px Georgia";
-    const titleLine = l.type === "cr" ? (l.category + " Activities") : l.title.replace(" for Sale", "").split(" – ")[0];
-    x.fillText(titleLine, 540, template === 2 ? 330 : 280, 940);
-    if (l.type === "bz") {
-        x.font = "400 36px Georgia";
-        x.fillStyle = gold;
-        x.fillText(l.location || "Qatar", 540, template === 2 ? 385 : 335);
+    x.fillText("FOR SALE • للبيع", 198, 88);
+    // ---- logo top right ----
+    x.fillStyle = "#fff";
+    rr(W - 118, 40, 70, 70, 18);
+    x.fill();
+    x.fillStyle = MAROON;
+    x.font = "800 44px " + SERIF;
+    x.fillText("Q", W - 83, 96);
+    x.textAlign = "left";
+    // ---- title ----
+    const titleFont = "700 58px " + SERIF;
+    const lines = wrap(l.title || (isCR ? "Commercial Registration for Sale" : "Running Business for Sale"), W - 160, titleFont);
+    x.fillStyle = "#fff";
+    x.font = titleFont;
+    let ty = topH + 70;
+    for (const ln of lines) {
+        x.fillText(ln, 80, ty);
+        ty += 70;
     }
-    // facts
-    const facts = l.type === "cr"
-        ? [`Established ${l.established}`, `${AGE(l.established)} Years Old`, l.permit === "Available" ? "Commercial Permit Available" : "Permit: " + l.permit, l.estCard === "Available" ? "Establishment Card Available" : "Card: " + l.estCard]
-        : [`Operating for ${AGE(l.established)} Years`, `${l.staff} Staff`, l.financials === "Available" ? "Financial Statements Available" : "Financials: " + l.financials, l.audited ? "Audited Accounts" : "Broker Reviewed"];
-    x.font = "400 34px Georgia";
-    x.fillStyle = template === 2 ? "#3B4B63" : "#C8D4E4";
-    facts.forEach((f, i) => x.fillText(f, 540, 470 + i * 62));
-    // price block
-    x.fillStyle = gold;
-    x.fillRect(240, 740, 600, 4);
-    x.font = "400 28px Georgia";
-    x.fillStyle = template === 2 ? "#6B6257" : "#D9CBB6";
-    x.fillText("ASKING PRICE", 540, 800);
-    x.font = "700 66px Georgia";
-    x.fillStyle = template === 2 ? navy : "#FFFFFF";
-    x.fillText(fmtQAR(l.price), 540, 870);
-    // ref + brand
-    x.font = "400 26px monospace";
-    x.fillStyle = teal === fg ? teal : gold;
-    x.fillText("Ref " + l.id, 540, 940);
-    x.font = "600 30px Georgia";
-    x.fillStyle = template === 2 ? navy : "#FFFFFF";
-    x.fillText("QatarBiz.net", 540, 998);
+    // ---- facts line ----
+    const facts = [];
+    if (l.established)
+        facts.push("Est. " + l.established);
+    if (!isCR && l.location)
+        facts.push(l.location);
+    if (l.category && !isCR)
+        facts.push(l.category);
+    if (isCR && (l.activities || []).length)
+        facts.push(l.activities[0]);
+    x.fillStyle = GOLD;
+    x.font = "600 30px " + SANS;
+    x.fillText(facts.join("   •   ").slice(0, 60), 80, ty + 8);
+    // ---- price ----
+    const py = ty + 120;
+    x.fillStyle = "rgba(255,255,255,.12)";
+    rr(80, py - 62, W - 160, 120, 20);
+    x.fill();
+    x.fillStyle = SAND;
+    x.font = "600 24px " + SANS;
+    x.fillText("ASKING PRICE — السعر المطلوب", 110, py - 22);
+    x.fillStyle = "#fff";
+    x.font = "800 64px " + SERIF;
+    x.fillText(l.price ? "QAR " + Number(l.price).toLocaleString() : "Contact us", 110, py + 38);
+    if (l.negotiable && l.price) {
+        x.fillStyle = GOLD;
+        x.font = "600 26px " + SANS;
+        x.textAlign = "right";
+        x.fillText("Negotiable • قابل للتفاوض", W - 110, py + 30);
+        x.textAlign = "left";
+    }
+    // ---- footer ----
+    x.fillStyle = "rgba(0,0,0,.25)";
+    x.fillRect(0, H - 110, W, 110);
+    x.fillStyle = "#fff";
+    x.font = "700 34px " + SERIF;
+    x.fillText("QatarBiz.net", 80, H - 42);
+    x.fillStyle = SAND;
+    x.font = "600 26px " + SANS;
+    x.textAlign = "right";
+    x.fillText((l.id || "") + "   •   +974 3331 0473", W - 80, H - 42);
+    x.textAlign = "left";
+    // ---- SOLD stamp ----
+    if (sold) {
+        x.save();
+        x.translate(W / 2, H / 2 - 40);
+        x.rotate(-0.22);
+        x.fillStyle = "rgba(255,255,255,.95)";
+        rr(-330, -85, 660, 170, 24);
+        x.fill();
+        x.strokeStyle = MAROON;
+        x.lineWidth = 10;
+        rr(-330, -85, 660, 170, 24);
+        x.stroke();
+        x.fillStyle = MAROON;
+        x.font = "800 84px " + SERIF;
+        x.textAlign = "center";
+        x.fillText("SOLD • تم البيع", 0, 30);
+        x.restore();
+        x.textAlign = "left";
+    }
     const a = document.createElement("a");
-    a.download = l.id + "-social-card.png";
+    a.download = (l.id || "qatarbiz") + "-instagram.png";
     a.href = c.toDataURL("image/png");
     a.click();
 }
-/* ================= LOGIN ================= */
 function Login({ go, setUser }) {
     const [mode, setMode] = useState("in"); // in | up
     const [f, setF] = useState({ name: "", email: "", pass: "" });
@@ -2343,7 +2450,7 @@ function AdminPanel({ go, user, setUser }) {
                                             React.createElement("div", { style: { display: "flex", gap: 6, flexWrap: "wrap" } },
                                                 React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px" }, onClick: () => setOpen(open === l.id ? null : l.id) }, open === l.id ? "Hide" : "Details"),
                                                 React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px" }, onClick: () => setEdit(Object.assign(Object.assign({ id: l.id }, Object.fromEntries(PUB_FIELDS.map(([k]) => { var _a; return [k, Array.isArray(l[k]) ? l[k].join(", ") : ((_a = l[k]) !== null && _a !== void 0 ? _a : "")]; }))), { negotiable: l.negotiable ? "Yes" : "No" })) }, "Edit"),
-                                                l.title && l.price ? React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px" }, title: "Instagram card", onClick: () => downloadSocialCard(l, 0) },
+                                                l.title ? React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px" }, title: "Instagram card", onClick: () => downloadSocialCard(l, 0) },
                                                     React.createElement(Download, { size: 14 })) : null,
                                                 React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", color: "var(--danger)" }, title: "Delete listing", onClick: async () => { if (window.confirm("Delete " + l.id + " permanently? This removes its documents too and cannot be undone.")) {
                                                         try {
