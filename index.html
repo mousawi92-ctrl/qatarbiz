@@ -641,6 +641,27 @@ const got = (ans, en) => { const a = ans || {}; const v = a[tr(en)] !== undefine
 const AREAS = ["West Bay", "Al Sadd", "Musheireb", "Corniche Area", "Old Airport", "Najma and Umm Ghuwailina", "Al Mansoura", "Salwa Road", "C Ring Road", "Al Thumama", "Abu Hamour", "Al Muntazah", "Doha - Other", "Lusail", "The Pearl", "Al Rayyan", "Al Gharrafa and Al Duhail", "Industrial Area", "Al Wakrah", "Al Wukair", "Umm Salal", "Al Khor", "Al Daayen", "Other Areas"];
 const CATEGORIES = ["Restaurants and Cafes", "Coffee Shops", "Cafeterias", "Salons and Barbershops", "Beauty and Spa", "Cleaning Services", "Trading", "Contracting and Construction", "Transport and Delivery", "Car Services and Garages", "Real Estate", "Retail Shops", "Supermarkets and Groceries", "Gyms and Sports", "Medical and Health", "Education and Training", "IT and Technology", "Events and Entertainment", "Manufacturing", "Laundry", "Other"];
 Object.assign(AR, {
+    "Chat with us on WhatsApp": "تواصل معنا عبر واتساب",
+    "WhatsApp": "واتساب",
+    "QatarBiz operates as a broker-managed marketplace for the sale of commercial registrations and operating businesses in Qatar. Use of the platform constitutes acceptance of these terms.": "تعمل منصة QatarBiz كسوق تُدار عبر وسيط لبيع السجلات التجارية والأنشطة التجارية القائمة في قطر. ويُعد استخدام المنصة موافقةً على هذه الشروط.",
+    "All listings are subject to administrative review before publication. QatarBiz may decline, edit, pause, or remove any listing to protect privacy or accuracy.": "تخضع جميع الإعلانات للمراجعة الإدارية قبل النشر. ويحق لـ QatarBiz رفض أو تعديل أو إيقاف أو إزالة أي إعلان حمايةً للخصوصية أو الدقة.",
+    "Buyers and sellers must not attempt to identify or contact each other outside the platform. All communication, offers, and negotiations are conducted through QatarBiz.": "لا يجوز للمشترين والبائعين محاولة التعرف على بعضهم أو التواصل خارج المنصة. تتم جميع الاتصالات والعروض والمفاوضات عبر QatarBiz.",
+    "Successful transactions may be subject to brokerage commission under a separate written agreement between QatarBiz and the relevant party.": "قد تخضع الصفقات المكتملة لعمولة وساطة بموجب اتفاقية خطية منفصلة بين QatarBiz والطرف المعني.",
+    "Information on listings is provided by sellers and reviewed in good faith. Buyers remain responsible for their own due diligence before completing any transaction.": "المعلومات الواردة في الإعلانات مقدّمة من البائعين وتُراجع بحسن نية. ويبقى المشتري مسؤولاً عن إجراء العناية الواجبة قبل إتمام أي صفقة.",
+    "Seller identity — including names, contact details, business names, CR numbers, and addresses — is never displayed publicly and is accessible only to authorized QatarBiz administrators.": "هوية البائع — بما فيها الأسماء وبيانات التواصل وأسماء الأنشطة وأرقام السجلات والعناوين — لا تُعرض للعامة أبداً ولا يطّلع عليها إلا مشرفو QatarBiz المخولون.",
+    "Uploaded documents are stored securely, are never published, and are shared only with qualified buyers through the controlled data room with access logging.": "تُحفظ المستندات المرفوعة بشكل آمن ولا تُنشر أبداً، ولا تُشارك إلا مع مشترين مؤهلين عبر غرفة بيانات خاضعة للرقابة مع تسجيل الوصول.",
+    "Buyer contact details are used solely to manage inquiries and are never shared with sellers or third parties.": "تُستخدم بيانات تواصل المشتري لإدارة الاستفسارات فقط ولا تُشارك مع البائعين أو أي طرف ثالث.",
+    "You may request removal of your listing and associated data at any time through your dashboard.": "يمكنك طلب إزالة إعلانك وبياناتك المرتبطة به في أي وقت من خلال حسابك.",
+    "QatarBiz acts as an intermediary and does not own the listed businesses or commercial registrations.": "تعمل QatarBiz كوسيط ولا تملك الأنشطة أو السجلات التجارية المعروضة.",
+    "Financial figures, document statuses, and business information are provided by sellers. While QatarBiz reviews submitted documents, buyers must complete independent due diligence.": "الأرقام المالية وحالة المستندات ومعلومات الأنشطة مقدّمة من البائعين. ورغم مراجعة QatarBiz للمستندات، يجب على المشتري إجراء العناية الواجبة بشكل مستقل.",
+    "QatarBiz does not provide legal, accounting, or valuation advice. Parties should engage their own professional advisors before completing a transaction.": "لا تقدم QatarBiz استشارات قانونية أو محاسبية أو تقييمية. وعلى الأطراف الاستعانة بمستشاريهم المختصين قبل إتمام الصفقة.",
+    "Government transfer procedures are subject to the requirements of the relevant Qatari authorities.": "تخضع إجراءات النقل الحكومية لمتطلبات الجهات القطرية المختصة.",
+    "Before business identity or private documents are disclosed, buyers may be asked to sign a digital privacy agreement.": "قبل الكشف عن هوية النشاط أو المستندات الخاصة، قد يُطلب من المشتري توقيع اتفاقية خصوصية رقمية.",
+    "The buyer confirms their identity and agrees not to contact the seller, employees, customers, suppliers, or landlords directly.": "يؤكد المشتري هويته ويتعهد بعدم التواصل المباشر مع البائع أو الموظفين أو العملاء أو الموردين أو المؤجرين.",
+    "The buyer agrees not to disclose the potential sale to any third party and not to bypass QatarBiz in any related transaction.": "يتعهد المشتري بعدم إفشاء أمر البيع المحتمل لأي طرف ثالث وعدم تجاوز QatarBiz في أي صفقة ذات صلة.",
+    "All information is provided strictly for evaluation purposes and remains the property of the seller.": "تُقدَّم جميع المعلومات لأغراض التقييم فقط وتبقى ملكاً للبائع.",
+    "Agreements are executed digitally with a logged timestamp and apply for the period stated in the agreement.": "تُوقَّع الاتفاقيات رقمياً مع تسجيل التوقيت الزمني وتسري للمدة المحددة فيها.",
+    "This platform is operated by Rallou Management Trading and Services (CR No. 78826), Doha, State of Qatar. These terms are governed by the laws of the State of Qatar.": "تُدار هذه المنصة بواسطة رالو للإدارة والتجارة والخدمات (سجل تجاري رقم 78826)، الدوحة، دولة قطر. وتخضع هذه الشروط لقوانين دولة قطر.",
     "Business location (area)": "موقع النشاط (المنطقة)",
     "Select the area": "اختر المنطقة",
     "West Bay": "الخليج الغربي", "Al Sadd": "السد", "Musheireb": "مشيرب", "Corniche Area": "منطقة الكورنيش",
@@ -1458,6 +1479,10 @@ function ListingDetail({ params, go }) {
                         (l.views || 0).toLocaleString(),
                         " ",
                         tr("views")),
+                    l.status !== "Sold" && (React.createElement("a", { href: "https://wa.me/97433310473?text=" + encodeURIComponent("Hello QatarBiz, I'm interested in listing " + l.id + (l.title ? " — " + l.title : "") + "\nمرحباً، مهتم بالإعلان " + l.id), target: "_blank", rel: "noreferrer", style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "13px 16px", borderRadius: 12, background: "#25D366", color: "#fff", fontWeight: 700, fontSize: 15.5, textDecoration: "none", marginBottom: 12 } },
+                        React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", fill: "currentColor" },
+                            React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" })),
+                        tr("Chat with us on WhatsApp"))),
                     l.status === "Sold" ? (React.createElement("div", { style: { background: "var(--gold-soft)", border: "1.5px solid var(--gold)", borderRadius: 14, padding: 18, textAlign: "center" } },
                         React.createElement("div", { style: { fontWeight: 800, fontSize: 20, letterSpacing: ".1em", color: "var(--navy)", marginBottom: 6 } }, tr("SOLD")),
                         React.createElement("p", { className: "muted", style: { fontSize: 13.5, lineHeight: 1.6 } }, tr("This business has been sold through QatarBiz.")))) : ([
@@ -2747,8 +2772,13 @@ function Legal({ params }) {
         React.createElement("div", { className: "wrap", style: { maxWidth: 720 } },
             React.createElement("div", { className: "eyebrow" }, tr("Legal")),
             React.createElement("h1", { className: "h2", style: { marginBottom: 20 } }, tr(title)),
-            paras.map((p, i) => React.createElement("p", { key: i, style: { lineHeight: 1.75, marginBottom: 14, fontSize: 15.5 } }, p)),
-            React.createElement("p", { className: "muted", style: { fontSize: 13, marginTop: 20 } }, tr("Prototype content for demonstration. Final legal text to be prepared with Qatari counsel.")))));
+            paras.map((p, i) => React.createElement("p", { key: i, style: { lineHeight: 1.75, marginBottom: 14, fontSize: 15.5 } }, tr(p))),
+            React.createElement("p", { className: "muted", style: { fontSize: 13.5, marginTop: 24, lineHeight: 1.7 } }, tr("This platform is operated by Rallou Management Trading and Services (CR No. 78826), Doha, State of Qatar. These terms are governed by the laws of the State of Qatar.")))));
+}
+function WABubble() {
+    return (React.createElement("a", { href: "https://wa.me/97433310473?text=" + encodeURIComponent("Hello QatarBiz 👋 مرحباً"), target: "_blank", rel: "noreferrer", "aria-label": "WhatsApp", style: { position: "fixed", bottom: 88, insetInlineEnd: 18, zIndex: 60, width: 54, height: 54, borderRadius: 27, background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,.25)" } },
+        React.createElement("svg", { width: "28", height: "28", viewBox: "0 0 24 24", fill: "#fff" },
+            React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" }))));
 }
 /* ================= APP ROUTER ================= */
 class ErrorBoundary extends React.Component {
@@ -2801,6 +2831,7 @@ function App() {
         page === "contact" && React.createElement(Contact, null),
         page === "login" && (user ? (user.needsName ? React.createElement(NameGate, { user: user, setUser: setUser }) : user.needsPhone ? React.createElement(PhoneVerify, { user: user, setUser: setUser }) : user.role === "admin" ? React.createElement(AdminPanel, { go: go, user: user, setUser: setUser }) : React.createElement(AccountDash, { go: go, user: user, setUser: setUser })) : React.createElement(Login, { go: go, setUser: setUser })),
         page === "legal" && React.createElement(Legal, { params: params }),
+        !(page === "login" && user && user.role === "admin") && React.createElement(WABubble, null),
         React.createElement(Footer, { go: go })));
 }
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(ErrorBoundary, null, React.createElement(App)));
