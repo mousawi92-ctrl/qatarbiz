@@ -148,7 +148,7 @@ function parseMultipart(buf, contentType) {
 }
 
 /* ---------------- listings ---------------- */
-const PUBLIC_FIELDS = ["id", "type", "noCR", "views", "title", "category", "location", "established", "price", "negotiable",
+const PUBLIC_FIELDS = ["id", "type", "noCR", "stake", "partnerRole", "views", "title", "category", "location", "established", "price", "negotiable",
   "expiry", "legalForm", "permit", "estCard", "staff", "rentMonthly", "leaseExpiry", "revenueRange",
   "badges", "activities", "extraLicenses", "desc", "brokerNote", "immediate", "status", "createdAt"];
 function publicView(l) {
@@ -160,7 +160,7 @@ function publicView(l) {
   return o;
 }
 function nextRef(type) {
-  const key = type === "bz" ? "bz" : "cr";
+  const key = type === "bz" ? "bz" : type === "pt" ? "pt" : "cr";
   db.counters[key] = (db.counters[key] || 1000) + 1;
   return "QB-" + key.toUpperCase() + "-" + db.counters[key];
 }
@@ -458,7 +458,7 @@ async function handle(req, res) {
     const buf = await readBody(req);
     const mp = parseMultipart(buf, req.headers["content-type"]);
     if (!mp) return bad(res, 400, "Invalid form data");
-    const type = mp.fields.type === "bz" ? "bz" : "cr";
+    const type = ["bz", "pt"].includes(mp.fields.type) ? mp.fields.type : "cr";
     let answers = {}; let structured = {};
     try { answers = JSON.parse(mp.fields.answers || "{}"); } catch (e) {}
     try { structured = JSON.parse(mp.fields.structured || "{}"); } catch (e) {}
@@ -488,7 +488,9 @@ async function handle(req, res) {
       sellerId: user ? user.id : null, sellerEmail: user ? user.email : (priv["Email address"] || priv["البريد الإلكتروني"] || null),
       answers: rest, private: priv, structured, files,
       noCR: type === "bz" && !!(structured && structured.noCR),
-      title: (type === "cr" ? "Commercial Registration for Sale" : "Running Business for Sale"),
+      stake: type === "pt" ? clean(String((structured && structured.stake) || ""), 12) : undefined,
+      partnerRole: type === "pt" ? clean(String((structured && structured.partnerRole) || ""), 60) : undefined,
+      title: (type === "cr" ? "Commercial Registration for Sale" : type === "pt" ? "Partnership Opportunity" : "Running Business for Sale"),
       established: yearM ? yearM[0] : "",
       expiry: clean(ex.expiryDate, 60),
       legalForm: clean(ex.legalForm, 100),
@@ -678,7 +680,7 @@ async function handle(req, res) {
     if (p === "/api/admin/listings" && req.method === "POST") {
       const b = parseJSONBody(await readBody(req));
       if (!b) return bad(res, 400, "Invalid request");
-      const type = b.type === "bz" ? "bz" : "cr";
+      const type = ["bz", "pt"].includes(b.type) ? b.type : "cr";
       const id = nextRef(type);
       const l = { id, type, status: ["Published", "Approved"].includes(b.status) ? b.status : "Approved",
         createdAt: new Date().toISOString(), sellerId: null, sellerEmail: null,
@@ -688,7 +690,9 @@ async function handle(req, res) {
         desc: clean(b.desc, 3000), revenueRange: clean(b.revenueRange, 120),
         badges: Array.isArray(b.badges) ? b.badges.map((x) => clean(x, 120)).slice(0, 20) : [],
         activities: Array.isArray(b.activities) ? b.activities.map((x) => clean(x, 120)).slice(0, 20) : [],
-        extraLicenses: [], noCR: type === "bz" && b.noCR === true };
+        extraLicenses: [], noCR: type === "bz" && b.noCR === true,
+        stake: type === "pt" ? clean(String(b.stake || ""), 12) : undefined,
+        partnerRole: type === "pt" ? clean(String(b.partnerRole || ""), 60) : undefined };
       db.listings.push(l); saveDBNow();
       return json(res, 200, { ok: true, reference: id });
     }

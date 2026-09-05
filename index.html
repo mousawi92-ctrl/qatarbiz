@@ -158,6 +158,22 @@ const AR = {
     "Commercial Registration": "سجل تجاري",
     "Running Business": "نشاط تجاري قائم",
     "Asset Sale — No CR": "بيع أصول — بدون سجل تجاري",
+    "Find a Business Partner": "البحث عن شريك تجاري",
+    "Partnerships": "الشراكات",
+    "Partnership": "شراكة",
+    "Partnership Opportunity": "فرصة شراكة",
+    "Partnership Listings": "إعلانات الشراكة",
+    "Offer a stake in your company to bring in a partner with capital or expertise.": "اعرض حصة من شركتك لاستقطاب شريك برأس مال أو خبرة.",
+    "Partnership Details": "تفاصيل الشراكة",
+    "Stake offered (%)": "الحصة المعروضة (%)",
+    "e.g. 30": "مثال: 30",
+    "Partner type sought": "نوع الشريك المطلوب",
+    "Silent partner": "شريك صامت",
+    "Operating partner": "شريك مشغّل",
+    "Either": "كلاهما ممكن",
+    "What will the partner contribute?": "ما الذي سيقدمه الشريك؟",
+    "e.g. Capital for expansion, restaurant management experience": "مثال: رأس مال للتوسع، خبرة في إدارة المطاعم",
+    "Stake": "حصة",
     "I don't have a Commercial Registration": "لا أملك سجلاً تجارياً",
     "Sell the business assets only (equipment, fit-out, goodwill). Buyer transfers to their own CR.": "بيع أصول النشاط فقط (المعدات والتجهيزات والشهرة التجارية). ينقل المشتري النشاط إلى سجله التجاري الخاص.",
     "Established": "سنة التأسيس",
@@ -1022,7 +1038,8 @@ function ListingCard({ l, go }) {
             sold && (React.createElement("div", { style: { position: "absolute", inset: 0, background: "rgba(110,16,44,.55)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 14 } },
                 React.createElement("span", { style: { background: "#fff", color: "#8A1538", fontWeight: 800, padding: "9px 26px", borderRadius: 10, fontSize: 19, letterSpacing: ".12em", transform: "rotate(-8deg)", boxShadow: "0 4px 14px rgba(0,0,0,.25)" } }, tr("SOLD"))))),
         React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 8 } },
-            React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr(l.category || "Running Business")),
+            React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : l.type === "pt" ? tr("Partnership") : tr(l.category || "Running Business")),
+            l.type === "pt" && l.stake && React.createElement("span", { className: "badge teal" }, l.stake + "% " + tr("Stake")),
             !isCR && l.noCR && React.createElement("span", { className: "badge gold" }, tr("Asset Sale — No CR")),
             sold ? React.createElement("span", { className: "badge gold" }, tr("Sold through QatarBiz")) : React.createElement("span", { className: "ref" }, l.id)),
         React.createElement("h3", { className: "h3", style: { fontSize: 17.5, marginBottom: 6 } }, tr(l.title)),
@@ -1082,12 +1099,14 @@ function Footer({ go }) {
                     React.createElement("h4", null, tr("Marketplace")),
                     React.createElement("button", { onClick: () => go("browse", { tab: "cr" }) }, tr("CR Listings")),
                     React.createElement("button", { onClick: () => go("browse", { tab: "bz" }) }, tr("Business Listings")),
+                    React.createElement("button", { onClick: () => go("browse", { tab: "pt" }) }, tr("Partnership Listings")),
                     React.createElement("button", { onClick: () => go("how") }, tr("How It Works")),
                     React.createElement("button", { onClick: () => go("privacy-page") }, tr("Privacy and Protection"))),
                 React.createElement("div", null,
                     React.createElement("h4", null, tr("Sellers")),
                     React.createElement("button", { onClick: () => go("sell-cr") }, tr("Sell a Commercial Registration")),
                     React.createElement("button", { onClick: () => go("sell-bz") }, tr("Sell a Running Business")),
+                    React.createElement("button", { onClick: () => go("sell-pt") }, tr("Find a Business Partner")),
                     React.createElement("button", { onClick: () => go("login") }, tr("Seller Dashboard"))),
                 React.createElement("div", null,
                     React.createElement("h4", null, tr("Legal")),
@@ -1239,7 +1258,8 @@ function Browse({ go, params }) {
             React.createElement("p", { className: "muted", style: { marginBottom: 26 } }, "Every listing is broker-managed. Business identities are disclosed only to qualified buyers."),
             React.createElement("div", { className: "tabs" },
                 React.createElement("button", { className: tab === "cr" ? "on" : "", onClick: () => { setTab("cr"); setFlags({}); } }, tr("Commercial Registrations")),
-                React.createElement("button", { className: tab === "bz" ? "on" : "", onClick: () => { setTab("bz"); setFlags({}); } }, tr("Running Businesses"))),
+                React.createElement("button", { className: tab === "bz" ? "on" : "", onClick: () => { setTab("bz"); setFlags({}); } }, tr("Running Businesses")),
+                React.createElement("button", { className: tab === "pt" ? "on" : "", onClick: () => { setTab("pt"); setFlags({}); } }, tr("Partnerships"))),
             React.createElement("div", { className: "card", style: { padding: 20, marginBottom: 28 } },
                 React.createElement("div", { style: { display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 14 } },
                     React.createElement("div", { style: { flex: "2 1 240px", position: "relative" } },
@@ -1422,7 +1442,8 @@ function ListingDetail({ params, go }) {
                 React.createElement("style", null, `@media(max-width:860px){.detail-grid{grid-template-columns:1fr!important;}}`),
                 React.createElement("div", null,
                     React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 12 } },
-                        React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr("Running Business")),
+                        React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : l.type === "pt" ? tr("Partnership") : tr("Running Business")),
+                        l.type === "pt" && l.stake && React.createElement("span", { className: "badge teal" }, l.stake + "% " + tr("Stake")),
                         !isCR && l.noCR && React.createElement("span", { className: "badge gold" }, tr("Asset Sale — No CR")),
                         React.createElement("span", { className: "ref" }, l.id)),
                     React.createElement("h1", { className: "h2", style: { marginBottom: 14 } }, tr(l.title)),
@@ -1797,6 +1818,13 @@ function SellChoose({ go, user }) {
                     React.createElement("div", { style: { flex: 1 } },
                         React.createElement("h3", { className: "h3", style: { marginBottom: 6 } }, tr("Running Business")),
                         React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.6 } }, tr("An operating business for sale with staff and revenue."))),
+                    React.createElement(ArrowRight, { size: 22, color: "var(--gold)" })),
+                React.createElement("div", { className: "card", onClick: () => go("sell-pt"), role: "button", tabIndex: 0, style: { padding: 28, cursor: "pointer", display: "flex", gap: 20, alignItems: "center" } },
+                    React.createElement("div", { style: { width: 74, height: 74, borderRadius: 20, background: "linear-gradient(135deg, #1F6E6B, #134442)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 } },
+                        React.createElement(Users, { size: 36, color: "#fff" })),
+                    React.createElement("div", { style: { flex: 1 } },
+                        React.createElement("h3", { className: "h3", style: { marginBottom: 6 } }, tr("Find a Business Partner")),
+                        React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.6 } }, tr("Offer a stake in your company to bring in a partner with capital or expertise."))),
                     React.createElement(ArrowRight, { size: 22, color: "var(--gold)" }))))));
 }
 function AuthGate({ go }) {
@@ -1913,6 +1941,67 @@ function SellBZ({ user, go, setUser }) {
                         return !!s.credit && !!s.cheq && !!s.aud;
                     if (i === 3)
                         return !!s.locationArea && got(a, "Number of employees") && got(a, "Total monthly salaries (QAR)") && got(a, "Monthly rent (QAR)") && got(a, "Staff accommodation rent (QAR / month)");
+                    if (i === 4)
+                        return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
+                    return true;
+                }, canSubmit: () => !!(s.c0 && s.c1 && s.c2) }))));
+}
+function SellPT({ user, go, setUser }) {
+    const [s, setS] = useState({});
+    if (!user)
+        return React.createElement(AuthGate, { go: go });
+    if (user.needsPhone)
+        return React.createElement(PhoneVerify, { user: user, setUser: setUser });
+    const [ex, setEx] = useState(null);
+    const set = (k, v) => setS((x) => (Object.assign(Object.assign({}, x), { [k]: v })));
+    const steps = ["Upload Commercial Registration", "Business Photos", "Partnership Details", "Business Status", "Asking Price", "Review and Submit"];
+    const render = (i) => {
+        switch (i) {
+            case 0: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
+            case 1: return React.createElement(PhotosStep, { s: s, set: set });
+            case 2: return (React.createElement(React.Fragment, null,
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Stake offered (%)")),
+                    React.createElement("input", { className: "input", type: "number", min: 1, max: 99, placeholder: tr("e.g. 30"), value: s.stake || "", onChange: (e) => set("stake", e.target.value) })),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Partner type sought")),
+                    React.createElement("div", { className: "seg" },
+                        React.createElement("button", { className: s.partnerRole === "Silent partner" ? "on" : "", onClick: () => set("partnerRole", "Silent partner") }, tr("Silent partner")),
+                        React.createElement("button", { className: s.partnerRole === "Operating partner" ? "on" : "", onClick: () => set("partnerRole", "Operating partner") }, tr("Operating partner")),
+                        React.createElement("button", { className: s.partnerRole === "Either" ? "on" : "", onClick: () => set("partnerRole", "Either") }, tr("Either")))),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("What will the partner contribute?")),
+                    React.createElement("textarea", { className: "input", style: { minHeight: 70 }, placeholder: tr("e.g. Capital for expansion, restaurant management experience") }))));
+            case 3: return (React.createElement(React.Fragment, null,
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Is the company's credit bureau record clear?")),
+                    React.createElement(YesNo, { value: s.credit, onChange: (v) => set("credit", v) })),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Any bounced cheques?")),
+                    React.createElement(YesNo, { value: s.cheq, onChange: (v) => set("cheq", v) })),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Are audited financial statements available?")),
+                    React.createElement(YesNo, { value: s.aud, onChange: (v) => set("aud", v) }))));
+            case 4: return (React.createElement(React.Fragment, null,
+                React.createElement(PriceStep, { s: s, set: set }),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, tr("Monthly revenue (optional)")),
+                    React.createElement("input", { className: "input", placeholder: tr("e.g. 120,000") }))));
+            case 5: return React.createElement(ReviewStep, { s: s, ex: ex, kindLabel: "Partnership", setC: set });
+            default: return null;
+        }
+    };
+    return (React.createElement("section", { className: "section grey", style: { paddingTop: 44 } },
+        React.createElement("div", { className: "wrap" },
+            React.createElement(Wizard, { title: "Find a Business Partner", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "pt", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
+                    if (i === 0)
+                        return !!ex && !ex.loading;
+                    if (i === 1)
+                        return (s.photoCount || 0) >= 5;
+                    if (i === 2)
+                        return !!s.stake && Number(s.stake) > 0 && Number(s.stake) < 100 && !!s.partnerRole;
+                    if (i === 3)
+                        return !!s.credit && !!s.cheq && !!s.aud;
                     if (i === 4)
                         return !!s.category && !!s.neg && got(a, "Asking price (QAR)");
                     return true;
@@ -2499,7 +2588,8 @@ function AdminPanel({ go, user, setUser }) {
             tab === "listings" && (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "seg", style: { marginBottom: 14, maxWidth: 420 } },
                     React.createElement("button", { className: admType === "cr" ? "on" : "", onClick: () => setAdmType("cr") }, "Commercial Registrations"),
-                    React.createElement("button", { className: admType === "bz" ? "on" : "", onClick: () => setAdmType("bz") }, "Running Businesses")),
+                    React.createElement("button", { className: admType === "bz" ? "on" : "", onClick: () => setAdmType("bz") }, "Running Businesses"),
+                    React.createElement("button", { className: admType === "pt" ? "on" : "", onClick: () => setAdmType("pt") }, "Partnerships")),
                 React.createElement("div", { className: "card", style: { padding: 0, overflowX: "auto" } },
                     React.createElement("table", { style: { width: "100%", borderCollapse: "collapse", minWidth: 860 } },
                         React.createElement("thead", null,
@@ -2739,7 +2829,18 @@ function AdminCreate({ onDone }) {
             React.createElement("label", null, "Listing type"),
             React.createElement("div", { className: "seg" },
                 React.createElement("button", { className: f.type === "cr" ? "on" : "", onClick: () => set("type", "cr") }, "Commercial Registration"),
-                React.createElement("button", { className: f.type === "bz" ? "on" : "", onClick: () => set("type", "bz") }, "Running Business"))),
+                React.createElement("button", { className: f.type === "bz" ? "on" : "", onClick: () => set("type", "bz") }, "Running Business"),
+                React.createElement("button", { className: f.type === "pt" ? "on" : "", onClick: () => set("type", "pt") }, "Partnership"))),
+        f.type === "pt" && React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0 16px" } },
+            React.createElement("div", { className: "field" },
+                React.createElement("label", null, "Stake offered (%)"),
+                React.createElement("input", { className: "input", type: "number", min: 1, max: 99, onChange: (e) => set("stake", e.target.value) })),
+            React.createElement("div", { className: "field" },
+                React.createElement("label", null, "Partner type"),
+                React.createElement("div", { className: "seg" },
+                    React.createElement("button", { className: f.partnerRole === "Silent partner" ? "on" : "", onClick: () => set("partnerRole", "Silent partner") }, "Silent"),
+                    React.createElement("button", { className: f.partnerRole === "Operating partner" ? "on" : "", onClick: () => set("partnerRole", "Operating partner") }, "Operating"),
+                    React.createElement("button", { className: f.partnerRole === "Either" ? "on" : "", onClick: () => set("partnerRole", "Either") }, "Either")))),
         f.type === "bz" && React.createElement("div", { className: "field" },
             React.createElement("label", null, "Asset sale (no CR included)"),
             React.createElement("div", { className: "seg" },
@@ -3017,6 +3118,7 @@ function App() {
         page === "sell" && React.createElement(SellChoose, { go: go, user: user }),
         page === "sell-cr" && React.createElement(SellCR, { user: user, go: go, setUser: setUser }),
         page === "sell-bz" && React.createElement(SellBZ, { user: user, go: go, setUser: setUser }),
+        page === "sell-pt" && React.createElement(SellPT, { user: user, go: go, setUser: setUser }),
         page === "how" && React.createElement(HowItWorks, { go: go }),
         page === "privacy-page" && React.createElement(PrivacyPage, null),
         page === "company-info" && React.createElement(CompanyInfoPage, null),
