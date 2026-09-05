@@ -194,6 +194,13 @@ async function handle(req, res) {
 
   if (!p.startsWith("/api/")) {
     if (req.method !== "GET" && req.method !== "HEAD") return bad(res, 405, "Method not allowed");
+    if (p === "/og-image.png") {
+      const og = path.join(ROOT, "og-image.png");
+      if (fs.existsSync(og)) {
+        res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" });
+        return fs.createReadStream(og).pipe(res);
+      }
+    }
     return serveStatic(req, res, p === "/" ? "/index.html" : p);
   }
 
