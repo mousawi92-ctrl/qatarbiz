@@ -1097,7 +1097,7 @@ function Footer({ go }) {
                 React.createElement("p", { style: { marginBottom: 14, opacity: .92 } },
                     tr("Contact us"),
                     ": ",
-                    React.createElement("a", { href: "tel:+97433310473", style: { color: "inherit", fontWeight: 600 } }, "+974 3331 0473")),
+                    React.createElement("a", { href: "tel:+97451949777", style: { color: "inherit", fontWeight: 600 } }, "+974 3331 0473")),
                 React.createElement("div", { style: { display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 } },
                     React.createElement("span", null, "\u00A9 2026 QatarBiz. All rights reserved."),
                     React.createElement("span", null, tr("Commission applies only upon successfully completed transactions.")))))));
@@ -1481,7 +1481,7 @@ function ListingDetail({ params, go }) {
                         (l.views || 0).toLocaleString(),
                         " ",
                         tr("views")),
-                    l.status !== "Sold" && (React.createElement("a", { href: "https://wa.me/97433310473?text=" + encodeURIComponent("Hello QatarBiz, I'm interested in listing " + l.id + (l.title ? " — " + l.title : "") + "\nمرحباً، مهتم بالإعلان " + l.id), target: "_blank", rel: "noreferrer", style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "13px 16px", borderRadius: 12, background: "#25D366", color: "#fff", fontWeight: 700, fontSize: 15.5, textDecoration: "none", marginBottom: 12 } },
+                    l.status !== "Sold" && (React.createElement("a", { href: "https://wa.me/97451949777?text=" + encodeURIComponent("Hello QatarBiz, I'm interested in listing " + l.id + (l.title ? " — " + l.title : "") + "\nمرحباً، مهتم بالإعلان " + l.id), target: "_blank", rel: "noreferrer", style: { display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "13px 16px", borderRadius: 12, background: "#25D366", color: "#fff", fontWeight: 700, fontSize: 15.5, textDecoration: "none", marginBottom: 12 } },
                         React.createElement("svg", { width: "20", height: "20", viewBox: "0 0 24 24", fill: "currentColor" },
                             React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" })),
                         tr("Chat with us on WhatsApp"))),
@@ -2666,16 +2666,10 @@ function AdminUsers({ flash }) {
                     React.createElement("td", { style: td }, u.phone || React.createElement("span", { className: "muted" }, "not verified")),
                     React.createElement("td", { style: td }, u.listings),
                     React.createElement("td", { style: td }, u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "—"),
-                    React.createElement("td", { style: td }, u.role !== "admin" && (React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", color: "var(--danger)" }, onClick: async () => { if (window.confirm("Delete user " + (u.email || u.phone || u.name) + "? Their listings stay in the panel, but they can no longer sign in.")) {
-                            try {
-                                await api.del("/api/admin/users/" + u.id);
-                                flash("User deleted");
-                                load();
-                            }
-                            catch (e) {
-                                flash(e.message);
-                            }
-                        } } }, "Delete")))))),
+                    React.createElement("td", { style: td }, u.role !== "admin" ? React.createElement("div", { style: { display: "flex", gap: 6 } },
+                  React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", background: "var(--gold-soft)", color: "var(--navy)" }, onClick: async () => { if (window.confirm("Promote " + (u.name || u.email) + " to admin?")) { try { await api.patch("/api/admin/users/" + u.id, { role: "admin" }); flash("User promoted to admin"); load(); } catch (e) { flash(e.message); } } } }, "Make Admin"),
+                  React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", color: "var(--danger)" }, onClick: async () => { if (window.confirm("Delete user " + (u.email || u.phone || u.name) + "?")) { try { await api.del("/api/admin/users/" + u.id); flash("User deleted"); load(); } catch (e) { flash(e.message); } } } }, "Delete")
+                ) : React.createElement("button", { className: "btn light sm", style: { padding: "6px 10px", color: "var(--muted)" }, onClick: async () => { if (u.email === "admin@qatarbiz.com") { flash("Cannot demote primary admin."); return; } if (window.confirm("Remove admin from " + (u.name || u.email) + "?")) { try { await api.patch("/api/admin/users/" + u.id, { role: "member" }); flash("Admin removed"); load(); } catch (e) { flash(e.message); } } } }, "Remove Admin")))),
                 users.length === 0 && React.createElement("tr", null,
                     React.createElement("td", { style: td, colSpan: 6, className: "muted" }, "No registered users yet."))))));
 }
@@ -2817,7 +2811,7 @@ function CompanyInfoPage() {
                 React.createElement(Row, { k: tr("Licensed by"), v: tr("Ministry of Commerce and Industry — State of Qatar") }),
                 React.createElement(Row, { k: tr("Registered activity for this platform"), v: tr("Agent with Commission (Activity Code 4610101)") }),
                 React.createElement(Row, { k: tr("Operational Address"), v: tr("Building 42, Street 850, Zone 60, Unit 60, Doha, State of Qatar") }),
-                React.createElement(Row, { k: tr("Contact"), v: React.createElement("a", { href: "tel:+97433310473", style: { color: "var(--navy)", fontWeight: 600 } }, "+974 3331 0473") })),
+                React.createElement(Row, { k: tr("Contact"), v: React.createElement("a", { href: "tel:+97451949777", style: { color: "var(--navy)", fontWeight: 600 } }, "+974 3331 0473") })),
             React.createElement("div", { className: "card", style: { padding: 26 } },
                 React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 10 } }, tr("Verification")),
                 React.createElement("p", { className: "muted", style: { fontSize: 14, lineHeight: 1.8, marginBottom: 10 } }, tr("The Commercial Registration and Commercial License of Rallou Management Trading and Services are electronically certified documents issued by the Ministry of Commerce and Industry of the State of Qatar and can be verified through the Ministry's official channels (www.moci.gov.qa).")),
@@ -2932,7 +2926,7 @@ function Legal({ params }) {
             React.createElement("p", { className: "muted", style: { fontSize: 13.5, marginTop: 24, lineHeight: 1.7 } }, tr("This platform is operated by Rallou Management Trading and Services (CR No. 78826), Doha, State of Qatar. These terms are governed by the laws of the State of Qatar.")))));
 }
 function WABubble() {
-    return (React.createElement("a", { href: "https://wa.me/97433310473?text=" + encodeURIComponent("Hello QatarBiz 👋 مرحباً"), target: "_blank", rel: "noreferrer", "aria-label": "WhatsApp", style: { position: "fixed", bottom: 88, insetInlineEnd: 18, zIndex: 60, width: 54, height: 54, borderRadius: 27, background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,.25)" } },
+    return (React.createElement("a", { href: "https://wa.me/97451949777?text=" + encodeURIComponent("Hello QatarBiz 👋 مرحباً"), target: "_blank", rel: "noreferrer", "aria-label": "WhatsApp", style: { position: "fixed", bottom: 88, insetInlineEnd: 18, zIndex: 60, width: 54, height: 54, borderRadius: 27, background: "#25D366", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 18px rgba(0,0,0,.25)" } },
         React.createElement("svg", { width: "28", height: "28", viewBox: "0 0 24 24", fill: "#fff" },
             React.createElement("path", { d: "M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.2c-.2.6-1.2 1.2-1.7 1.2-.4.1-1 .1-1.6-.1a13 13 0 0 1-5.8-5.1c-.6-1-.9-2-.9-2.6 0-.6.3-1.3.7-1.6.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.1.2-.2.3-.1.5.4.7 1 1.4 1.7 2 .6.5 1.2.9 1.9 1.2.2.1.4.1.5-.1l.6-.7c.2-.2.4-.3.6-.2l1.9.9c.3.1.5.2.5.4.1.2.1.5-.1.8z" }))));
 }

@@ -573,6 +573,21 @@ async function handle(req, res) {
     }
 
     const mUser = p.match(/^\/api\/admin\/users\/([A-Za-z0-9-]+)$/);
+    if (mUser && req.method === "PATCH") {
+      const u = db.users.find((x) => x.id === mUser[1]);
+      if (!u) return bad(res, 404, "User not found");
+      const b = parseJSONBody(await readBody(req));
+      if (b && b.role === "admin") {
+        u.role = "admin"; saveDBNow();
+        return json(res, 200, { ok: true, message: "User promoted to admin." });
+      }
+      if (b && b.role === "member") {
+        if (u.email === "admin@qatarbiz.com") return bad(res, 400, "Cannot demote the primary admin account.");
+        u.role = "member"; saveDBNow();
+        return json(res, 200, { ok: true, message: "User demoted to member." });
+      }
+      return bad(res, 400, "Invalid role.");
+    }
     if (mUser && req.method === "DELETE") {
       const u = db.users.find((x) => x.id === mUser[1]);
       if (!u) return bad(res, 404, "User not found");
