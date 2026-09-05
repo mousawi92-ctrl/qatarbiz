@@ -148,7 +148,7 @@ function parseMultipart(buf, contentType) {
 }
 
 /* ---------------- listings ---------------- */
-const PUBLIC_FIELDS = ["id", "type", "views", "title", "category", "location", "established", "price", "negotiable",
+const PUBLIC_FIELDS = ["id", "type", "noCR", "views", "title", "category", "location", "established", "price", "negotiable",
   "expiry", "legalForm", "permit", "estCard", "staff", "rentMonthly", "leaseExpiry", "revenueRange",
   "badges", "activities", "extraLicenses", "desc", "brokerNote", "immediate", "status", "createdAt"];
 function publicView(l) {
@@ -487,6 +487,7 @@ async function handle(req, res) {
       id, type, status: "Submitted", createdAt: new Date().toISOString(),
       sellerId: user ? user.id : null, sellerEmail: user ? user.email : (priv["Email address"] || priv["البريد الإلكتروني"] || null),
       answers: rest, private: priv, structured, files,
+      noCR: type === "bz" && !!(structured && structured.noCR),
       title: (type === "cr" ? "Commercial Registration for Sale" : "Running Business for Sale"),
       established: yearM ? yearM[0] : "",
       expiry: clean(ex.expiryDate, 60),
@@ -687,7 +688,7 @@ async function handle(req, res) {
         desc: clean(b.desc, 3000), revenueRange: clean(b.revenueRange, 120),
         badges: Array.isArray(b.badges) ? b.badges.map((x) => clean(x, 120)).slice(0, 20) : [],
         activities: Array.isArray(b.activities) ? b.activities.map((x) => clean(x, 120)).slice(0, 20) : [],
-        extraLicenses: [] };
+        extraLicenses: [], noCR: type === "bz" && b.noCR === true };
       db.listings.push(l); saveDBNow();
       return json(res, 200, { ok: true, reference: id });
     }

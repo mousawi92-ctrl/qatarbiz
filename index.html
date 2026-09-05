@@ -157,6 +157,9 @@ const AR = {
     "Transition support": "دعم انتقالي",
     "Commercial Registration": "سجل تجاري",
     "Running Business": "نشاط تجاري قائم",
+    "Asset Sale — No CR": "بيع أصول — بدون سجل تجاري",
+    "I don't have a Commercial Registration": "لا أملك سجلاً تجارياً",
+    "Sell the business assets only (equipment, fit-out, goodwill). Buyer transfers to their own CR.": "بيع أصول النشاط فقط (المعدات والتجهيزات والشهرة التجارية). ينقل المشتري النشاط إلى سجله التجاري الخاص.",
     "Established": "سنة التأسيس",
     "CR expiry": "انتهاء السجل التجاري",
     "Commercial permit": "الرخصة التجارية",
@@ -1020,6 +1023,7 @@ function ListingCard({ l, go }) {
                 React.createElement("span", { style: { background: "#fff", color: "#8A1538", fontWeight: 800, padding: "9px 26px", borderRadius: 10, fontSize: 19, letterSpacing: ".12em", transform: "rotate(-8deg)", boxShadow: "0 4px 14px rgba(0,0,0,.25)" } }, tr("SOLD"))))),
         React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 8 } },
             React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr(l.category || "Running Business")),
+            !isCR && l.noCR && React.createElement("span", { className: "badge gold" }, tr("Asset Sale — No CR")),
             sold ? React.createElement("span", { className: "badge gold" }, tr("Sold through QatarBiz")) : React.createElement("span", { className: "ref" }, l.id)),
         React.createElement("h3", { className: "h3", style: { fontSize: 17.5, marginBottom: 6 } }, tr(l.title)),
         React.createElement("div", { className: "muted", style: { fontSize: 13.5, marginBottom: 12, display: "flex", justifyContent: "space-between", gap: 8 } },
@@ -1419,6 +1423,7 @@ function ListingDetail({ params, go }) {
                 React.createElement("div", null,
                     React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 12 } },
                         React.createElement("span", { className: "badge grey" }, isCR ? tr("Commercial Registration") : tr("Running Business")),
+                        !isCR && l.noCR && React.createElement("span", { className: "badge gold" }, tr("Asset Sale — No CR")),
                         React.createElement("span", { className: "ref" }, l.id)),
                     React.createElement("h1", { className: "h2", style: { marginBottom: 14 } }, tr(l.title)),
                     React.createElement(Veil, { label: "Business name, owner identity, and exact address are withheld. Disclosed only to qualified buyers via the broker." }),
@@ -1669,7 +1674,7 @@ function ExtractedFields({ f, manual }) {
             " ",
             tr("business name, CR number, owner names, full document, registered address."))));
 }
-function CRUploadStep({ ex, setEx }) {
+function CRUploadStep({ ex, setEx, allowNoCR, noCR, setNoCR }) {
     const doExtract = async (file) => {
         setEx({ loading: true });
         try {
@@ -1688,6 +1693,11 @@ function CRUploadStep({ ex, setEx }) {
     return (React.createElement(React.Fragment, null,
         React.createElement("p", { className: "muted", style: { fontSize: 14, marginBottom: 14, lineHeight: 1.6 } }, tr("Upload your Commercial Registration. Our system reads it automatically and fills in the details for you.")),
         React.createElement(FakeUpload, { label: "Commercial Registration", hint: tr("PDF, JPG, or PNG"), uploaded: !!ex, onUpload: doExtract }),
+        allowNoCR && React.createElement("div", { onClick: () => setNoCR(!noCR), role: "button", tabIndex: 0, style: { padding: "14px 16px", marginTop: 14, cursor: "pointer", display: "flex", gap: 12, alignItems: "center", borderRadius: 12, border: noCR ? "1.5px solid var(--gold)" : "1px solid var(--border)", background: noCR ? "var(--gold-soft)" : "transparent" } },
+            React.createElement("div", { style: { width: 22, height: 22, borderRadius: 6, flexShrink: 0, border: "2px solid var(--gold)", background: noCR ? "var(--gold)" : "transparent", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 } }, noCR ? "\u2713" : ""),
+            React.createElement("div", null,
+                React.createElement("div", { style: { fontWeight: 600, fontSize: 15 } }, tr("I don't have a Commercial Registration")),
+                React.createElement("div", { className: "muted", style: { fontSize: 13, lineHeight: 1.5 } }, tr("Sell the business assets only (equipment, fit-out, goodwill). Buyer transfers to their own CR.")))),
         ex && ex.loading && (React.createElement("div", { className: "notice", style: { marginTop: 14 } },
             tr("Reading your document…"),
             " ",
@@ -1850,7 +1860,7 @@ function SellBZ({ user, go, setUser }) {
     const steps = ["Upload Commercial Registration", "Business Photos", "Business Status", "Staff and Rent", "Asking Price", "Review and Submit"];
     const render = (i) => {
         switch (i) {
-            case 0: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx });
+            case 0: return React.createElement(CRUploadStep, { ex: ex, setEx: setEx, allowNoCR: true, noCR: !!s.noCR, setNoCR: (v) => set("noCR", v) });
             case 1: return React.createElement(PhotosStep, { s: s, set: set });
             case 2: return (React.createElement(React.Fragment, null,
                 React.createElement("div", { className: "field" },
@@ -1896,7 +1906,7 @@ function SellBZ({ user, go, setUser }) {
         React.createElement("div", { className: "wrap" },
             React.createElement(Wizard, { title: "Sell a Running Business", subtitle: "Seller submission", steps: steps, renderStep: render, doneRef: "\u2014", kind: "bz", getStructured: () => (Object.assign(Object.assign({}, s), { extracted: ex && ex.f ? ex.f : null })), canNext: (i, a) => {
                     if (i === 0)
-                        return !!ex && !ex.loading;
+                        return !!s.noCR || (!!ex && !ex.loading);
                     if (i === 1)
                         return (s.photoCount || 0) >= 5;
                     if (i === 2)
@@ -2390,6 +2400,33 @@ const PUB_FIELDS = [
     ["revenueRange", "Monthly revenue (shown)"], ["badges", "Badges (comma-separated)"],
     ["activities", "Activities (comma-separated)"], ["extraLicenses", "Extra licenses (comma-separated)"],
 ];
+function AdminPhotos({ l, reload, flash }) {
+    const inputRef = useRef(null);
+    const [busy, setBusy] = useState(false);
+    const photos = (l.files || []).filter((f) => /^Business photo/i.test(f.label));
+    const addPhotos = async (files) => {
+        if (!files || !files.length) return;
+        setBusy(true);
+        const fd = new FormData();
+        Array.from(files).forEach((f) => fd.append("photo", f, f.name));
+        try { await api.upload("/api/admin/listings/" + l.id + "/photos", fd); flash("Photos added"); reload(); }
+        catch (e) { flash(e.message); }
+        setBusy(false);
+    };
+    const delPhoto = async (stored) => {
+        if (!window.confirm("Remove this photo?")) return;
+        try { await api.del("/api/admin/files/" + l.id + "/" + encodeURIComponent(stored)); flash("Photo removed"); reload(); }
+        catch (e) { flash(e.message); }
+    };
+    return (React.createElement("div", null,
+        React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", margin: "14px 0 8px" } }, "Photos (" + photos.length + ")"),
+        photos.length > 0 && React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))", gap: 8, marginBottom: 10 } }, photos.map((f) => (React.createElement("div", { key: f.stored, style: { position: "relative", borderRadius: 10, overflow: "hidden", border: "1px solid var(--border)" } },
+            React.createElement("img", { src: "/api/admin/files/" + l.id + "/" + encodeURIComponent(f.stored), alt: "", loading: "lazy", style: { width: "100%", height: 90, objectFit: "cover", display: "block" } }),
+            React.createElement("button", { onClick: () => delPhoto(f.stored), title: "Remove photo", style: { position: "absolute", top: 4, insetInlineEnd: 4, width: 24, height: 24, borderRadius: 12, border: "none", background: "rgba(0,0,0,.62)", color: "#fff", cursor: "pointer", fontSize: 13, lineHeight: "24px", padding: 0 } }, "\u2715"))))),
+        photos.length === 0 && React.createElement("p", { className: "muted", style: { fontSize: 13, marginBottom: 10 } }, "No photos yet."),
+        React.createElement("input", { ref: inputRef, type: "file", accept: "image/*", multiple: true, style: { display: "none" }, onChange: (e) => { addPhotos(e.target.files); e.target.value = ""; } }),
+        React.createElement("button", { className: "btn light sm", disabled: busy, onClick: () => inputRef.current && inputRef.current.click() }, busy ? "Uploading\u2026" : "+ Add photos")));
+}
 function AdminPanel({ go, user, setUser }) {
     const [tab, setTab] = useState("listings");
     const [admType, setAdmType] = useState("cr");
@@ -2536,7 +2573,8 @@ function AdminPanel({ go, user, setUser }) {
                                                             " ",
                                                             f.label,
                                                             " \u2014 ",
-                                                            f.name)))) : React.createElement("p", { className: "muted", style: { fontSize: 13 } }, "No documents uploaded.")),
+                                                            f.name)))) : React.createElement("p", { className: "muted", style: { fontSize: 13 } }, "No documents uploaded."),
+                                                    React.createElement(AdminPhotos, { l: l, reload: load, flash: flash })),
                                                 React.createElement("div", null,
                                                     React.createElement("h4", { style: { fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", marginBottom: 8 } }, "Submission answers"),
                                                     React.createElement("div", { style: { maxHeight: 300, overflowY: "auto", paddingInlineEnd: 6 } }, l.answers && Object.keys(l.answers).length ? Object.entries(l.answers).map(([k, v]) => v ? React.createElement(KV, { key: k, k: k, v: String(v) }) : null) : React.createElement("p", { className: "muted", style: { fontSize: 13 } }, "\u2014"))))))),
@@ -2702,6 +2740,11 @@ function AdminCreate({ onDone }) {
             React.createElement("div", { className: "seg" },
                 React.createElement("button", { className: f.type === "cr" ? "on" : "", onClick: () => set("type", "cr") }, "Commercial Registration"),
                 React.createElement("button", { className: f.type === "bz" ? "on" : "", onClick: () => set("type", "bz") }, "Running Business"))),
+        f.type === "bz" && React.createElement("div", { className: "field" },
+            React.createElement("label", null, "Asset sale (no CR included)"),
+            React.createElement("div", { className: "seg" },
+                React.createElement("button", { className: f.noCR ? "on" : "", onClick: () => set("noCR", true) }, "Yes"),
+                React.createElement("button", { className: !f.noCR ? "on" : "", onClick: () => set("noCR", false) }, "No"))),
         React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "0 16px" } },
             React.createElement("div", { className: "field" },
                 React.createElement("label", null, "Public title"),
