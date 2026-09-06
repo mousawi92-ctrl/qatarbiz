@@ -1422,9 +1422,33 @@ function InquiryModal({ listing, intent, onClose }) {
                     "Submit inquiry ",
                     React.createElement(ArrowRight, { size: 16 })))))));
 }
+function Lightbox({ photos, index, setIndex }) {
+    const touch = useRef(null);
+    const count = photos.length;
+    const prev = (e) => { e && e.stopPropagation(); setIndex((index - 1 + count) % count); };
+    const next = (e) => { e && e.stopPropagation(); setIndex((index + 1) % count); };
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.key === "Escape") setIndex(-1);
+            else if (e.key === "ArrowLeft") prev();
+            else if (e.key === "ArrowRight") next();
+        };
+        window.addEventListener("keydown", onKey);
+        document.body.style.overflow = "hidden";
+        return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+    });
+    const btn = { position: "absolute", top: "50%", transform: "translateY(-50%)", width: 46, height: 46, borderRadius: 23, border: "none", background: "rgba(255,255,255,.14)", color: "#fff", fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2 };
+    return (React.createElement("div", { onClick: () => setIndex(-1), onTouchStart: (e) => { touch.current = e.touches[0].clientX; }, onTouchEnd: (e) => { if (touch.current === null) return; const dx = e.changedTouches[0].clientX - touch.current; touch.current = null; if (Math.abs(dx) > 45) (dx > 0 ? prev() : next()); }, style: { position: "fixed", inset: 0, zIndex: 9999, background: "rgba(10,6,8,.92)", display: "flex", alignItems: "center", justifyContent: "center" } },
+        React.createElement("button", { onClick: (e) => { e.stopPropagation(); setIndex(-1); }, "aria-label": "Close", style: { position: "absolute", top: 18, insetInlineEnd: 18, width: 44, height: 44, borderRadius: 22, border: "none", background: "rgba(255,255,255,.14)", color: "#fff", fontSize: 20, cursor: "pointer", zIndex: 2 } }, "\u2715"),
+        count > 1 && React.createElement("button", { onClick: prev, "aria-label": "Previous", style: Object.assign(Object.assign({}, btn), { left: 12 }) }, "\u2039"),
+        count > 1 && React.createElement("button", { onClick: next, "aria-label": "Next", style: Object.assign(Object.assign({}, btn), { right: 12 }) }, "\u203A"),
+        React.createElement("img", { src: photos[index], alt: "", onClick: (e) => e.stopPropagation(), style: { maxWidth: "92vw", maxHeight: "84vh", objectFit: "contain", borderRadius: 10, boxShadow: "0 12px 50px rgba(0,0,0,.5)" } }),
+        React.createElement("div", { style: { position: "absolute", bottom: 22, left: 0, right: 0, textAlign: "center", color: "#fff", fontSize: 14, letterSpacing: ".04em", opacity: .85 } }, (index + 1) + " / " + count)));
+}
 function ListingDetail({ params, go }) {
     const [l, setL] = useState(null);
     const [intent, setIntent] = useState(null);
+    const [lb, setLb] = useState(-1);
     useEffect(() => {
         let ok = true;
         api.get("/api/listings/" + encodeURIComponent((params === null || params === void 0 ? void 0 : params.id) || "")).then((d) => ok && setL(d.listing)).catch(() => ok && setL(undefined));
@@ -1492,8 +1516,9 @@ function ListingDetail({ params, go }) {
                         React.createElement(KV, { k: tr("Transition support"), v: l.transition }))),
                     (l.photos || []).length > 0 && (React.createElement("div", { className: "card", style: { padding: 24, marginTop: 18 } },
                         React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 14 } }, tr("Photos")),
-                        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 } }, l.photos.map((u) => (React.createElement("a", { key: u, href: u, target: "_blank", rel: "noreferrer", style: { display: "block", borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" } },
-                            React.createElement("img", { src: u, alt: "", loading: "lazy", style: { width: "100%", height: 130, objectFit: "cover", display: "block" } }))))))),
+                        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 10 } }, l.photos.map((u, pi) => (React.createElement("button", { key: u, onClick: () => setLb(pi), "aria-label": "View photo", style: { display: "block", padding: 0, borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)", cursor: "pointer", background: "none" } },
+                            React.createElement("img", { src: u, alt: "", loading: "lazy", style: { width: "100%", height: 130, objectFit: "cover", display: "block" } }))))),
+                        lb >= 0 && React.createElement(Lightbox, { photos: l.photos, index: lb, setIndex: setLb }))),
                     React.createElement("div", { className: "card", style: { padding: 24, marginTop: 18 } },
                         React.createElement("h3", { className: "h3", style: { fontSize: 17, marginBottom: 10 } }, tr("Broker notes")),
                         React.createElement("p", { style: { lineHeight: 1.65, fontSize: 15 } }, l.brokerNote),
